@@ -1,15 +1,16 @@
-name: Build-Deploy
+name: Build and test
 on:
   push:
     branches:
-      - main
+      - '**'
+      - '!main'
 
 permissions:
   contents: write
   pull-requests: write
   packages: write
 jobs:
-  release-please:
+  build-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,15 +31,3 @@ jobs:
             ${{ runner.os }}-gradle-
       - name: Build
         run: ./gradlew build
-      - uses: google-github-actions/release-please-action@v3
-        id: release
-        with:
-          release-type: simple
-          package-name: pdfgen-core
-          include-v-in-tag: false
-      - name: Upload to github packages
-        if: ${{ steps.release.outputs.release_created }}
-        run: ./gradlew -Pversion=${{ steps.release.outputs.tag_name}} publish
-        env:
-          GITHUB_USERNAME: x-access-token
-          GITHUB_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
