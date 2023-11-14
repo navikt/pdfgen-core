@@ -2,19 +2,23 @@ package no.nav.pdfgen.core
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.pdfgen.core.util.FontMetadata
+import org.apache.pdfbox.io.IOUtils
+import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.*
+import java.util.Base64
 import kotlin.io.path.exists
 import kotlin.io.path.extension
-import no.nav.pdfgen.core.util.FontMetadata
-import org.apache.pdfbox.io.IOUtils
-
+import kotlin.io.path.pathString
+import kotlin.io.path.readBytes
+private val log = KotlinLogging.logger {}
 val objectMapper: ObjectMapper = ObjectMapper().findAndRegisterModules()
-val templateRoot: Path = getFromEnvOrDefault("TEMPLATES_PATH", "templates/")
-val imagesRoot: Path = getFromEnvOrDefault("RESOURCES_PATH", "resources/")
-val fontsRoot: Path = getFromEnvOrDefault("FONTS_PATH", "fonts/")
+val templateRoot: PDFGenResource = PDFGenResource("TEMPLATES_PATH", "templates/")
+val imagesRoot: PDFGenResource = PDFGenResource("RESOURCES_PATH", "resources/")
+val fontsRoot: PDFGenResource = PDFGenResource("FONTS_PATH", "fonts/")
 
 class PDFgen {
     companion object {
@@ -34,7 +38,7 @@ data class Environment(
     val colorProfile: ByteArray =
         IOUtils.toByteArray(Environment::class.java.getResourceAsStream("/sRGB2014.icc")),
     val fonts: List<FontMetadata> =
-        objectMapper.readValue(Files.newInputStream(fontsRoot.resolve("config.json"))),
+        objectMapper.readValue(fontsRoot.readAllBytes("config.json")),
     val disablePdfGet: Boolean = System.getenv("DISABLE_PDF_GET")?.let { it == "true" } ?: false,
     val enableHtmlEndpoint: Boolean =
         System.getenv("ENABLE_HTML_ENDPOINT")?.let { it == "true" } ?: false,
@@ -53,17 +57,26 @@ data class Environment(
     }
 }
 
-private fun getFromEnvOrDefault(envVariableName: String, defaultPath: String): Path {
-    return System.getenv(envVariableName)?.let { Paths.get(it) }
-        ?: run {
-            val fromDefaultPath = Paths.get(defaultPath)
-            return if (fromDefaultPath.exists()) fromDefaultPath
-            else Paths.get(ClassLoader.getSystemResource(defaultPath).file.toString())
-        }
+data class PDFGenResource(val envVariableName: String, val defaultPath: String){
+
+    private val _path: Path = System.getenv(envVariableName)?.let { Paths.get(it) }
+        ?: Paths.get(defaultPath)
+    fun readAllBytes(filename: String? = null): ByteArray {
+        val filePath = filename?.let { _path.resolve(it) } ?: _path
+        return if (filePath.exists()) filePath.readBytes() else Environment::class.java.classLoader.getResourceAsStream(filePath.pathString)!!.readAllBytes()
+    }
+
+    fun toFile(filename: String? = null): File = getPath(filename).toFile()
+
+    fun getPath(filename: String? = null): Path {
+        val filePath = filename?.let { _path.resolve(it) } ?: _path
+        log.debug { "Reading file from path $filePath. File exists on path = ${filePath.exists()}" }
+        return if (filePath.exists()) filePath else Path.of(Environment::class.java.classLoader.getResource(filePath.pathString)!!.toURI())
+    }
 }
 
 private fun loadImages() =
-    Files.list(imagesRoot)
+    Files.list(imagesRoot.getPath())
         .filter {
             val validExtensions = setOf("jpg", "jpeg", "png", "bmp", "svg")
             !Files.isHidden(it) && it.fileName.extension in validExtensions
@@ -84,7 +97,7 @@ private fun loadImages() =
         .toMap()
 
 private fun loadResources() =
-    Files.list(imagesRoot)
+    Files.list(imagesRoot.getPath())
         .filter {
             val validExtensions = setOf("svg")
             !Files.isHidden(it) && it.fileName.extension in validExtensions

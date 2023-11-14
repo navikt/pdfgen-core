@@ -17,7 +17,7 @@ fun setupHandlebars() =
     }
 
 fun loadTemplates(): TemplateMap =
-    Files.list(templateRoot)
+    Files.list(templateRoot.getPath())
         .filter { !Files.isHidden(it) && Files.isDirectory(it) }
         .map {
             it.fileName.toString() to Files.list(it).filter { b -> b.fileName.extension == "hbs" }

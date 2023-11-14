@@ -17,6 +17,38 @@ Most commonly, pdfgen-core is used with templates, fonts, additional resources, 
 Check GitHub releases to find the latest `release` version 
 Check [Github releases](https://github.com/navikt/pdfgen-core/releases) to find the latest `release` version
 
+In your own repository create subfolders in `templates` and `data`
+```bash
+mkdir {templates,data}/directory_name # directory_name can be anything, but it'll be a necessary part of the API later
+````
+* `templates/directory_name/` should then be populated with your .hbs-templates. the names of these templates will also decide parts of the API paths
+* `data/directory_name/` should be populated with json files with names corresponding to a target .hbs-template, this can be used to test your PDFs during development of templates.
+
+Additionally create subfolder `resources` containing additional resources which can be referred in your .hbs-templates
+
+
+### Example usage
+#### Generating HTML from predefined JSON data in data-folder
+```kotlin
+
+val html: String = createHtmlFromTemplateData(template, directoryName)
+```
+
+#### Generating PDF from predefined JSON data in data-folder
+```kotlin
+val html: String = createHtmlFromTemplateData(template, directoryName)
+val pdfBytes: ByteArray = createPDFA(html)
+```
+
+#### Generating from JSON input data
+```kotlin
+val html: String = createHtmlFromTemplateData(template, directoryName, jsonNode)
+val pdfBytes: ByteArray = createPDFA(html)
+
+// Or directly
+val pdfBytes: ByteArray = createPDFA(template, directoryName, jsonNode)
+```
+
 ## Developing pdfgen-core
 
 ### Build and run tests
