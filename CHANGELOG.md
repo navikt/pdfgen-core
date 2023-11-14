@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/navikt/pdfgen-core/compare/1.0.0...1.0.1) (2023-11-14)
+
+
+### Bug Fixes
+
+* Read resources from classpath ([#2](https://github.com/navikt/pdfgen-core/issues/2)) ([ee66189](https://github.com/navikt/pdfgen-core/commit/ee661896c81d3ab324865ac57e76f7a56d9fc366))
+
 ## 1.0.0 (2023-11-14)
 
 
