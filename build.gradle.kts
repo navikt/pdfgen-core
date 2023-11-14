@@ -1,6 +1,7 @@
 group = "no.nav.pdfgen"
 version = properties["version"]?.takeIf { it is String && it.isNotEmpty() } ?: "local-build"
 println(version)
+
 val handlebarsVersion = "4.3.1"
 val jacksonVersion = "2.15.3"
 val jaxbVersion = "4.0.4"
@@ -16,6 +17,7 @@ val junitJupiterVersion = "5.10.1"
 val verapdfVersion = "1.24.1"
 val ktfmtVersion = "0.44"
 val kotlinloggerVesion = "5.1.0"
+val javaVersion = JavaVersion.VERSION_21
 
 
 plugins {
@@ -33,12 +35,16 @@ tasks {
         useJUnitPlatform {}
         testLogging {
             events("passed", "skipped", "failed")
-            showStandardStreams = true
+            showStackTraces = true
+            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
         }
     }
 
     compileKotlin {
-        kotlinOptions.jvmTarget = "21"
+        kotlinOptions.jvmTarget = javaVersion.toString()
+    }
+    compileTestKotlin {
+        kotlinOptions.jvmTarget = javaVersion.toString()
     }
 
     spotless {
@@ -82,6 +88,8 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
 }
 
 java {
@@ -116,7 +124,7 @@ publishing {
         maven {
 
             name = "pdfgen-core"
-            description = "Bibliotek som inneholder kode for å genere generere PDF"
+            description = "Bibliotek som inneholder kode for å generere PDF"
             url = uri("https://maven.pkg.github.com/navikt/pdfgen-core")
             credentials {
                 username = System.getenv("GITHUB_USERNAME")
