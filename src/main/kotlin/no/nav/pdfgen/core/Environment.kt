@@ -2,6 +2,7 @@ package no.nav.pdfgen.core
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.pdfgen.core.util.FontMetadata
 import org.apache.pdfbox.io.IOUtils
@@ -15,7 +16,7 @@ import kotlin.io.path.extension
 import kotlin.io.path.pathString
 import kotlin.io.path.readBytes
 private val log = KotlinLogging.logger {}
-val objectMapper: ObjectMapper = ObjectMapper().findAndRegisterModules()
+val objectMapper: ObjectMapper = ObjectMapper().findAndRegisterModules().registerKotlinModule()
 val templateRoot: PDFGenResource = PDFGenResource("TEMPLATES_PATH", "templates/")
 val imagesRoot: PDFGenResource = PDFGenResource("RESOURCES_PATH", "resources/")
 val fontsRoot: PDFGenResource = PDFGenResource("FONTS_PATH", "fonts/")
