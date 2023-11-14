@@ -1,5 +1,5 @@
 group = "no.nav.pdfgen"
-version = properties["version"]?.takeIf { it is String && it.isNotEmpty() } ?: "local-build"
+version = properties["version"]?.takeIf { it is String && it.isNotEmpty() && it != "unspecified" } ?: "local-build"
 println(version)
 
 val handlebarsVersion = "4.3.1"
