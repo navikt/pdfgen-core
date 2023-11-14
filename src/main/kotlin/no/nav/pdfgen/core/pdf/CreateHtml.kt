@@ -14,21 +14,21 @@ import no.nav.pdfgen.core.template.loadTemplates
 
 private val log = KotlinLogging.logger {}
 
-fun createHtml(template: String, applicationName: String, jsonPayload: JsonNode): String? {
+fun createHtml(template: String, directoryName: String, jsonPayload: JsonNode): String? {
     log.debug { "${"JSON: {}"} ${objectMapper.writeValueAsString(jsonPayload)}" }
-    return render(applicationName, template, jsonPayload)
+    return render(directoryName, template, jsonPayload)
 }
 
-fun createHtmlFromTemplateData(template: String, applicationName: String): String? {
-    val jsonNode = hotTemplateData(applicationName, template)
+fun createHtmlFromTemplateData(template: String, directoryName: String): String? {
+    val jsonNode = hotTemplateData(directoryName, template)
     log.debug { "${"JSON: {}"} ${objectMapper.writeValueAsString(jsonNode)}" }
-    return render(applicationName, template, jsonNode)
+    return render(directoryName, template, jsonNode)
 }
 
-private fun render(applicationName: String, template: String, jsonNode: JsonNode): String? {
+private fun render(directoryName: String, template: String, jsonNode: JsonNode): String? {
     return HANDLEBARS_RENDERING_SUMMARY.startTimer()
         .use {
-            loadTemplates()[applicationName to template]?.apply(
+            loadTemplates()[directoryName to template]?.apply(
                 Context.newBuilder(jsonNode)
                     .resolver(
                         JsonNodeValueResolver.INSTANCE,
