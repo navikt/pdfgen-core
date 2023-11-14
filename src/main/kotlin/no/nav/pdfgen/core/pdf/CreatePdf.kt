@@ -1,5 +1,6 @@
 package no.nav.pdfgen.core.pdf
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
 import com.openhtmltopdf.svgsupport.BatikSVGDrawer
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -32,6 +33,10 @@ import org.verapdf.pdfa.results.TestAssertion
 
 private val log = KotlinLogging.logger {}
 
+fun createPDFA(template: String, directoryName: String, jsonPayload: JsonNode? = null): ByteArray? {
+    val html = jsonPayload?.let { createHtml(template, directoryName, it) } ?: createHtmlFromTemplateData(template, directoryName)
+    return html?.let { createPDFA(it) }
+}
 fun createPDFA(html: String): ByteArray {
     val pdf =
         ByteArrayOutputStream()

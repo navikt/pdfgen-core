@@ -28,22 +28,25 @@ Additionally create subfolder `resources` containing additional resources which 
 
 
 ### Example usage
-#### Generating HTML from data
+#### Generating HTML from predefined JSON data in data-folder
 ```kotlin
 
 val html: String = createHtmlFromTemplateData(template, directoryName)
 ```
 
-#### Generating PDF from data
+#### Generating PDF from predefined JSON data in data-folder
 ```kotlin
 val html: String = createHtmlFromTemplateData(template, directoryName)
 val pdfBytes: ByteArray = createPDFA(html)
 ```
 
-#### Generating JSON input data
+#### Generating from JSON input data
 ```kotlin
 val html: String = createHtmlFromTemplateData(template, directoryName, jsonNode)
 val pdfBytes: ByteArray = createPDFA(html)
+
+// Or directly
+val pdfBytes: ByteArray = createPDFA(template, directoryName, jsonNode)
 ```
 
 ## Developing pdfgen-core
