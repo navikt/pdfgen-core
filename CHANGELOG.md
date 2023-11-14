@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/navikt/pdfgen-core/compare/1.0.1...1.0.2) (2023-11-14)
+
+
+### Bug Fixes
+
+* Register kotlinmodule on objectmapper ([#4](https://github.com/navikt/pdfgen-core/issues/4)) ([0ee63ef](https://github.com/navikt/pdfgen-core/commit/0ee63ef7008e554706fb2dead6b7ebbf94a54304))
+
 ## [1.0.1](https://github.com/navikt/pdfgen-core/compare/1.0.0...1.0.1) (2023-11-14)
 
 
