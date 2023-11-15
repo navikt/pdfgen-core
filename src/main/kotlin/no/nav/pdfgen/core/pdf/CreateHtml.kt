@@ -25,7 +25,7 @@ fun createHtmlFromTemplateData(template: String, directoryName: String): String?
     return render(directoryName, template, jsonNode)
 }
 
-private fun render(directoryName: String, template: String, jsonNode: JsonNode): String? {
+fun render(directoryName: String, template: String, jsonNode: JsonNode): String? {
     return HANDLEBARS_RENDERING_SUMMARY.startTimer()
         .use {
             loadTemplates()[directoryName to template]?.apply(
