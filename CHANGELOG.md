@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/navikt/pdfgen-core/compare/1.0.2...1.0.3) (2023-11-15)
+
+
+### Bug Fixes
+
+* Need render to be public used in unit tests ([#6](https://github.com/navikt/pdfgen-core/issues/6)) ([f95f325](https://github.com/navikt/pdfgen-core/commit/f95f325446a21370d339655dc0d2b41d4478acf6))
+
 ## [1.0.2](https://github.com/navikt/pdfgen-core/compare/1.0.1...1.0.2) (2023-11-14)
 
 
