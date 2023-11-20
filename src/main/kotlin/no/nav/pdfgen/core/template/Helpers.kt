@@ -5,15 +5,14 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Helper
-import com.github.jknack.handlebars.Options
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
-import java.util.Locale
 import no.nav.pdfgen.core.domain.Periode
 import no.nav.pdfgen.core.domain.PeriodeMapper
 import no.nav.pdfgen.core.environment
 import no.nav.pdfgen.core.objectMapper
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.util.Locale
 
 val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 val yearMonthFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("MM.yyyy")
@@ -105,11 +104,15 @@ fun registerNavHelpers(
         // Expects json-objects of the form { "fom": "2018-05-20", "tom": "2018-05-29" }
         registerHelper(
             "json_to_period",
-            Helper<String> { context, _ ->
-                when (context) {
+            Helper<Any> { context, _ ->
+                val jsonString: String? = when (context) {
+                    is String -> context
+                    else -> context?.let { objectMapper.writeValueAsString(it) }
+                }
+                when (jsonString) {
                     null -> return@Helper ""
                     else -> {
-                        val periode: Periode = PeriodeMapper.jsonTilPeriode(context)
+                        val periode: Periode = PeriodeMapper.jsonTilPeriode(jsonString)
                         if (periode.fom == null) return@Helper ""
                         return@Helper periode.fom.format(dateFormat) +
                             " - " +
@@ -383,23 +386,6 @@ fun registerNavHelpers(
         )
         additionalHelpers.forEach { (t, u) -> registerHelper(t, u) }
     }
-}
-
-private fun buildContext(
-    options: Options,
-    value: Any,
-    index: Int,
-    key: String,
-    isLast: Boolean = false
-): Context {
-    val parent = options.context
-    val first = true
-    return Context.newBuilder(parent, value)
-        .combine("@key", key)
-        .combine("@index", index)
-        .combine("@first", if (first) "first" else "")
-        .combine("@last", if (isLast) "last" else "")
-        .build()
 }
 
 private fun getParameterValue(jsonNode: JsonNode, parameterPathString: String?): String {
