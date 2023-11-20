@@ -6,14 +6,14 @@ import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Helper
 import com.github.jknack.handlebars.Options
-import no.nav.pdfgen.core.domain.Periode
-import no.nav.pdfgen.core.domain.PeriodeMapper
-import no.nav.pdfgen.core.environment
-import no.nav.pdfgen.core.objectMapper
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Locale
+import no.nav.pdfgen.core.domain.Periode
+import no.nav.pdfgen.core.domain.PeriodeMapper
+import no.nav.pdfgen.core.environment
+import no.nav.pdfgen.core.objectMapper
 
 val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 val yearMonthFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("MM.yyyy")
@@ -21,6 +21,7 @@ val dateFormatLong: DateTimeFormatter =
     DateTimeFormatter.ofPattern("d. MMMM yyyy").withLocale(Locale.of("no", "NO"))
 val datetimeFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
 val yearMonthFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM")
+
 fun formatDateTime(formatter: DateTimeFormatter, context: CharSequence): String =
     try {
         formatter.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parseBest(context))
@@ -31,13 +32,17 @@ fun formatDateTime(formatter: DateTimeFormatter, context: CharSequence): String 
 fun formatDate(formatter: DateTimeFormatter, context: CharSequence): String {
     val dateSplit = context.split("-")
     return try {
-        if (dateSplit.size == 2) formatter.format(yearMonthFormatter.parse(context)) else formatter.format(DateTimeFormatter.ISO_DATE.parse(context))
+        if (dateSplit.size == 2) formatter.format(yearMonthFormatter.parse(context))
+        else formatter.format(DateTimeFormatter.ISO_DATE.parse(context))
     } catch (e: Exception) {
         formatter.format(DateTimeFormatter.ISO_DATE.parse("$context-01"))
     }
 }
 
-fun registerNavHelpers(handlebars: Handlebars, additionalHelpers: Map<String, Helper<*>> = emptyMap()) {
+fun registerNavHelpers(
+    handlebars: Handlebars,
+    additionalHelpers: Map<String, Helper<*>> = emptyMap()
+) {
     handlebars.apply {
         registerHelper(
             "iso_to_nor_date",
@@ -108,7 +113,8 @@ fun registerNavHelpers(handlebars: Handlebars, additionalHelpers: Map<String, He
                         if (periode.fom == null) return@Helper ""
                         return@Helper periode.fom.format(dateFormat) +
                             " - " +
-                            (periode.tom?.format(dateFormat) ?: periode.til?.format(dateFormat) ?: "")
+                            (periode.tom?.format(dateFormat)
+                                ?: periode.til?.format(dateFormat) ?: "")
                     }
                 }
             },
@@ -356,12 +362,9 @@ fun registerNavHelpers(handlebars: Handlebars, additionalHelpers: Map<String, He
                 val filterByValue = options.param(1, null as String?)
                 val buffer = options.buffer()
                 if (list is JsonNode) {
-                    val filteredList = list.filter {
-                        getParameterValue(it, filterByField) == filterByValue
-                    }
-                    filteredList.forEachIndexed { _, it ->
-                        buffer.append(options.fn(it))
-                    }
+                    val filteredList =
+                        list.filter { getParameterValue(it, filterByField) == filterByValue }
+                    filteredList.forEachIndexed { _, it -> buffer.append(options.fn(it)) }
                 }
 
                 buffer
@@ -376,15 +379,19 @@ fun registerNavHelpers(handlebars: Handlebars, additionalHelpers: Map<String, He
         )
         registerHelper(
             "stringify",
-            Helper<Any> { value, _ ->
-                objectMapper.writeValueAsString(value)
-            },
+            Helper<Any> { value, _ -> objectMapper.writeValueAsString(value) },
         )
         additionalHelpers.forEach { (t, u) -> registerHelper(t, u) }
     }
 }
 
-private fun buildContext(options: Options, value: Any, index: Int, key: String, isLast: Boolean = false): Context {
+private fun buildContext(
+    options: Options,
+    value: Any,
+    index: Int,
+    key: String,
+    isLast: Boolean = false
+): Context {
     val parent = options.context
     val first = true
     return Context.newBuilder(parent, value)

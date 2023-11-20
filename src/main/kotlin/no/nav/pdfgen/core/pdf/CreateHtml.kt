@@ -5,11 +5,11 @@ import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.JsonNodeValueResolver
 import com.github.jknack.handlebars.context.MapValueResolver
 import io.github.oshai.kotlinlogging.KotlinLogging
+import java.nio.file.Files
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.pdfgen.core.HANDLEBARS_RENDERING_SUMMARY
 import no.nav.pdfgen.core.environment
 import no.nav.pdfgen.core.objectMapper
-import java.nio.file.Files
 
 private val log = KotlinLogging.logger {}
 
@@ -27,14 +27,17 @@ fun createHtmlFromTemplateData(template: String, directoryName: String): String?
 fun render(directoryName: String, template: String, jsonNode: JsonNode): String? {
     return HANDLEBARS_RENDERING_SUMMARY.startTimer()
         .use {
-            environment.get().templates[directoryName to template]?.apply(
-                Context.newBuilder(jsonNode)
-                    .resolver(
-                        JsonNodeValueResolver.INSTANCE,
-                        MapValueResolver.INSTANCE,
-                    )
-                    .build(),
-            )
+            environment
+                .get()
+                .templates[directoryName to template]
+                ?.apply(
+                    Context.newBuilder(jsonNode)
+                        .resolver(
+                            JsonNodeValueResolver.INSTANCE,
+                            MapValueResolver.INSTANCE,
+                        )
+                        .build(),
+                )
         }
         ?.let { html ->
             log.debug { "${"Generated HTML {}"} ${StructuredArguments.keyValue("html", html)}" }

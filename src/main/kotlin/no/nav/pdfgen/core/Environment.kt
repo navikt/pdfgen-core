@@ -5,9 +5,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.github.jknack.handlebars.Helper
 import io.github.oshai.kotlinlogging.KotlinLogging
-import no.nav.pdfgen.core.template.loadTemplates
-import no.nav.pdfgen.core.util.FontMetadata
-import org.apache.pdfbox.io.IOUtils
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
@@ -17,6 +14,9 @@ import kotlin.io.path.exists
 import kotlin.io.path.extension
 import kotlin.io.path.pathString
 import kotlin.io.path.readBytes
+import no.nav.pdfgen.core.template.loadTemplates
+import no.nav.pdfgen.core.util.FontMetadata
+import org.apache.pdfbox.io.IOUtils
 
 private val log = KotlinLogging.logger {}
 val objectMapper: ObjectMapper = ObjectMapper().findAndRegisterModules().registerKotlinModule()
@@ -34,6 +34,7 @@ class Environment(
     val resources: Map<String, ByteArray> = loadResources(resourcesRoot)
     val fonts: List<FontMetadata> = objectMapper.readValue(fontsRoot.readAllBytes("config.json"))
     val templates = loadTemplates(templateRoot, additionalHandlebarHelpers)
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -49,22 +50,28 @@ class Environment(
 
     fun copy(): Environment {
         return Environment(
-                additionalHandlebarHelpers = additionalHandlebarHelpers,
-                templateRoot = templateRoot,
-                resourcesRoot = resourcesRoot,
-                fontsRoot = fontsRoot,
-                dataRoot = dataRoot,
+            additionalHandlebarHelpers = additionalHandlebarHelpers,
+            templateRoot = templateRoot,
+            resourcesRoot = resourcesRoot,
+            fontsRoot = fontsRoot,
+            dataRoot = dataRoot,
         )
     }
-
 }
 
 data class PDFGenResource(val path: String) {
 
     private val _path: Path = Paths.get(path)
+
     fun readAllBytes(filename: String? = null): ByteArray {
         val filePath = filename?.let { _path.resolve(it) } ?: _path
-        return if (filePath.exists()) filePath.readBytes() else Environment::class.java.classLoader.getResourceAsStream(filePath.pathString)!!.readAllBytes()
+        return if (filePath.exists()) filePath.readBytes()
+        else
+            Environment::class
+                .java
+                .classLoader
+                .getResourceAsStream(filePath.pathString)!!
+                .readAllBytes()
     }
 
     fun toFile(filename: String? = null): File = getPath(filename).toFile()
@@ -72,7 +79,8 @@ data class PDFGenResource(val path: String) {
     fun getPath(filename: String? = null): Path {
         val filePath = filename?.let { _path.resolve(it) } ?: _path
         log.info { "Reading file from path $filePath. File exists on path = ${filePath.exists()}" }
-        return if (filePath.exists()) filePath else Path.of(Environment::class.java.classLoader.getResource(filePath.pathString)!!.toURI())
+        return if (filePath.exists()) filePath
+        else Path.of(Environment::class.java.classLoader.getResource(filePath.pathString)!!.toURI())
     }
 }
 

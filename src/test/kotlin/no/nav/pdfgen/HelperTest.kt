@@ -9,7 +9,7 @@ import com.github.jknack.handlebars.JsonNodeValueResolver
 import com.github.jknack.handlebars.context.MapValueResolver
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader
 import no.nav.pdfgen.core.Environment
-import no.nav.pdfgen.core.PDFgen
+import no.nav.pdfgen.core.PDFGenCore
 import no.nav.pdfgen.core.template.registerNavHelpers
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -25,7 +25,7 @@ internal class HelperTest {
 
     @BeforeEach
     fun init() {
-        PDFgen.init(Environment())
+        PDFGenCore.init(Environment())
     }
 
     private fun jsonContext(jsonNode: JsonNode): Context {

@@ -10,5 +10,6 @@ data class FontMetadata(
     val style: BaseRendererBuilder.FontStyle,
     val subset: Boolean,
 ) {
-    val bytes: ByteArray get() = environment.get().fontsRoot.readAllBytes(path)
+    val bytes: ByteArray
+        get() = environment.get().fontsRoot.readAllBytes(path)
 }
