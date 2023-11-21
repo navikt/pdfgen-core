@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Helper
+import no.nav.pdfgen.core.PDFGenCore
 import no.nav.pdfgen.core.domain.Periode
 import no.nav.pdfgen.core.domain.PeriodeMapper
-import no.nav.pdfgen.core.environment
 import no.nav.pdfgen.core.objectMapper
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -183,14 +183,14 @@ fun registerNavHelpers(
         registerHelper(
             "image",
             Helper<String> { context, _ ->
-                if (context == null) "" else environment.get().images[context]
+                if (context == null) "" else PDFGenCore.environment.images[context]
             },
         )
 
         registerHelper(
             "resource",
             Helper<String> { context, _ ->
-                environment.get().resources[context]?.toString(Charsets.UTF_8) ?: ""
+                PDFGenCore.environment.resources[context]?.toString(Charsets.UTF_8) ?: ""
             },
         )
 

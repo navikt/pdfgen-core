@@ -4,13 +4,13 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
 import com.openhtmltopdf.svgsupport.BatikSVGDrawer
 import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.pdfgen.core.PDFGenCore
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.Calendar
 import javax.imageio.ImageIO
-import no.nav.pdfgen.core.environment
 import no.nav.pdfgen.core.util.scale
 import no.nav.pdfgen.core.util.toPortait
 import org.apache.pdfbox.pdmodel.PDDocument
@@ -45,7 +45,7 @@ fun createPDFA(html: String): ByteArray {
             .apply {
                 PdfRendererBuilder()
                     .apply {
-                        for (font in environment.get().fonts) {
+                        for (font in PDFGenCore.environment.fonts) {
                             useFont(
                                 { ByteArrayInputStream(font.bytes) },
                                 font.family,
@@ -57,7 +57,7 @@ fun createPDFA(html: String): ByteArray {
                     }
                     .usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_2_A)
                     .usePdfUaAccessbility(true)
-                    .useColorProfile(environment.get().colorProfile)
+                    .useColorProfile(PDFGenCore.environment.colorProfile)
                     .useSVGDrawer(BatikSVGDrawer())
                     .withHtmlContent(html, null)
                     .toStream(this)
@@ -107,7 +107,7 @@ fun createPDFA(imageStream: InputStream, outputStream: OutputStream) {
             throw IllegalArgumentException(e)
         }
 
-        val intent = PDOutputIntent(document, environment.get().colorProfile.inputStream())
+        val intent = PDOutputIntent(document, PDFGenCore.environment.colorProfile.inputStream())
         intent.info = "sRGB IEC61966-2.1"
         intent.outputCondition = "sRGB IEC61966-2.1"
         intent.outputConditionIdentifier = "sRGB IEC61966-2.1"

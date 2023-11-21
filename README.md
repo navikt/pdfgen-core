@@ -132,6 +132,32 @@ Filter array of objects by fieldvalue
 {{/filter}}
 
 ```
+
+### {{json_to_period}}
+
+Format json with parameters `fom`, `tom`/`til` as period string
+
+**Example data**
+
+```json
+{
+  "periode": {
+    "fom": "2020-03-20",
+    "tom": "2021-09-23"
+  }
+}
+```
+
+**Params**
+
+* `json` **{Periode}** Object with fields `fom` and `tom` or`til`
+* `returns` **{List}** Formatted date (ex `20.03.2020 - 23.09.2021`)
+
+**Example**
+
+```handlebars
+{{json_to_period periode}}
+```
 ## Developing pdfgen-core
 
 ### Build and run tests
@@ -139,7 +165,7 @@ Filter array of objects by fieldvalue
 
 ### Publish to local maven repository
 Run the following command
-`./gradlew publishToMavenLocal`
+`./gradlew publishToMavenLocal` (or `./gradlew -t publishToMavenLocal` if you want to enable autobuild on changes)
 
 This will publish `pdfgen-core` to local maven repository with version `local-build`
 

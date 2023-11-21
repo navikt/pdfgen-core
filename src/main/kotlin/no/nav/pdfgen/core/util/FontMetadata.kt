@@ -1,7 +1,7 @@
 package no.nav.pdfgen.core.util
 
 import com.openhtmltopdf.outputdevice.helper.BaseRendererBuilder
-import no.nav.pdfgen.core.environment
+import no.nav.pdfgen.core.PDFGenCore
 
 data class FontMetadata(
     val family: String,
@@ -11,5 +11,5 @@ data class FontMetadata(
     val subset: Boolean,
 ) {
     val bytes: ByteArray
-        get() = environment.get().fontsRoot.readAllBytes(path)
+        get() = PDFGenCore.environment.fontsRoot.readAllBytes(path)
 }

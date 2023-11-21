@@ -1,17 +1,21 @@
 package no.nav.pdfgen.core
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.concurrent.atomic.AtomicReference
 
-val environment = AtomicReference(Environment())
+private val coreEnvironment = AtomicReference(Environment())
+private val log = KotlinLogging.logger {}
 
 class PDFGenCore {
     companion object {
         fun init(initialEnvironment: Environment) {
-            environment.set(initialEnvironment)
+            coreEnvironment.set(initialEnvironment)
         }
 
+        val environment: Environment get() = coreEnvironment.get()
         fun reloadEnvironment() {
-            environment.set(environment.get().copy())
+            log.debug { "Reloading environment" }
+            coreEnvironment.set(coreEnvironment.get().copy())
         }
     }
 }

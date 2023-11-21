@@ -8,7 +8,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import java.nio.file.Files
 import net.logstash.logback.argument.StructuredArguments
 import no.nav.pdfgen.core.HANDLEBARS_RENDERING_SUMMARY
-import no.nav.pdfgen.core.environment
+import no.nav.pdfgen.core.PDFGenCore
 import no.nav.pdfgen.core.objectMapper
 
 private val log = KotlinLogging.logger {}
@@ -27,8 +27,7 @@ fun createHtmlFromTemplateData(template: String, directoryName: String): String?
 fun render(directoryName: String, template: String, jsonNode: JsonNode): String? {
     return HANDLEBARS_RENDERING_SUMMARY.startTimer()
         .use {
-            environment
-                .get()
+            PDFGenCore.environment
                 .templates[directoryName to template]
                 ?.apply(
                     Context.newBuilder(jsonNode)
@@ -52,7 +51,7 @@ fun render(directoryName: String, template: String, jsonNode: JsonNode): String?
 }
 
 private fun hotTemplateData(applicationName: String, template: String): JsonNode {
-    val dataFile = environment.get().dataRoot.getPath("$applicationName/$template.json")
+    val dataFile = PDFGenCore.environment.dataRoot.getPath("$applicationName/$template.json")
     val data =
         objectMapper.readValue(
             if (Files.exists(dataFile)) {
