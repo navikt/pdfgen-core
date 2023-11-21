@@ -80,7 +80,8 @@ data class PDFGenResource(val path: String) {
         val filePath = filename?.let { _path.resolve(it) } ?: _path
         log.trace { "Reading file from path $filePath. File exists on path = ${filePath.exists()}" }
         return if (filePath.exists()) filePath
-        else Path.of(Environment::class.java.classLoader.getResource(filePath.pathString)!!.toURI())
+        else Environment::class.java.classLoader.getResource(filePath.pathString)?.let{
+            Path.of(it.toURI()) } ?: throw RuntimeException("Could not find file at path $filePath")
     }
 }
 

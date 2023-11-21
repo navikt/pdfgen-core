@@ -10,6 +10,7 @@ import no.nav.pdfgen.core.domain.Periode
 import no.nav.pdfgen.core.domain.PeriodeMapper
 import no.nav.pdfgen.core.objectMapper
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Locale
@@ -384,6 +385,17 @@ fun registerNavHelpers(
             "stringify",
             Helper<Any> { value, _ -> objectMapper.writeValueAsString(value) },
         )
+
+        registerHelper(
+            "now",
+            Helper<Any> { _, _ -> LocalDateTime.now().toString()}
+        )
+
+        registerHelper(
+            "now_date",
+            Helper<Any> { _, _ -> LocalDate.now().toString()}
+        )
+
         additionalHelpers.forEach { (t, u) -> registerHelper(t, u) }
     }
 }
