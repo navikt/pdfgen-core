@@ -34,7 +34,9 @@ import org.verapdf.pdfa.results.TestAssertion
 private val log = KotlinLogging.logger {}
 
 fun createPDFA(template: String, directoryName: String, jsonPayload: JsonNode? = null): ByteArray? {
-    val html = jsonPayload?.let { createHtml(template, directoryName, it) } ?: createHtmlFromTemplateData(template, directoryName)
+    val html =
+        jsonPayload?.let { createHtml(template, directoryName, it) }
+            ?: createHtmlFromTemplateData(template, directoryName)
     return html?.let { createPDFA(it) }
 }
 fun createPDFA(html: String): ByteArray {
@@ -87,7 +89,7 @@ fun createPDFA(imageStream: InputStream, outputStream: OutputStream) {
 
         try {
             val dc = xmp.createAndAddDublinCoreSchema()
-            dc.addCreator("pdfgen")
+            dc.addCreator("pdfgen-coree")
             dc.addDate(cal)
 
             val id = xmp.createAndAddPFAIdentificationSchema()

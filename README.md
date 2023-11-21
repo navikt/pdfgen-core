@@ -94,7 +94,7 @@ Example of usage of handlebar helpers defined in this library
 
 ### {{filter}}
 
-Replace spaces in a string with hyphens.
+Filter array of objects by fieldvalue
 
 **Example data**
 
@@ -132,7 +132,6 @@ Replace spaces in a string with hyphens.
 {{/filter}}
 
 ```
-<!-- results in:  "foo-bar-baz-qux" -->
 ## Developing pdfgen-core
 
 ### Build and run tests

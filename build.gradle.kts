@@ -16,7 +16,8 @@ val prometheusVersion = "0.16.0"
 val junitJupiterVersion = "5.10.1"
 val verapdfVersion = "1.24.1"
 val ktfmtVersion = "0.44"
-val kotlinloggerVesion = "5.1.0"
+val kotlinloggerVersion = "5.1.0"
+val kotestVersion = "5.8.0"
 val javaVersion = JavaVersion.VERSION_21
 
 
@@ -32,7 +33,7 @@ plugins {
 tasks {
 
     test {
-        useJUnitPlatform {}
+        useJUnitPlatform()
         testLogging {
             events("passed", "skipped", "failed")
             showStackTraces = true
@@ -80,7 +81,7 @@ dependencies {
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
 
     implementation("org.verapdf:validation-model:$verapdfVersion")
-    implementation("io.github.oshai:kotlin-logging-jvm:$kotlinloggerVesion")
+    implementation("io.github.oshai:kotlin-logging-jvm:$kotlinloggerVersion")
 
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
@@ -89,6 +90,9 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
+    testImplementation("io.kotest:kotest-property:$kotestVersion")
+
 
 }
 
