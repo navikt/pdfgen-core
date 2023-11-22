@@ -1,36 +1,58 @@
 package no.nav.pdfgen.core.template
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Helper
+import no.nav.pdfgen.core.PDFGenCore
+import no.nav.pdfgen.core.domain.Periode
+import no.nav.pdfgen.core.domain.PeriodeMapper
+import no.nav.pdfgen.core.objectMapper
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Locale
-import no.nav.pdfgen.core.PDFgen
-import no.nav.pdfgen.core.domain.Periode
-import no.nav.pdfgen.core.domain.PeriodeMapper
 
 val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+val yearMonthFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("MM.yyyy")
 val dateFormatLong: DateTimeFormatter =
     DateTimeFormatter.ofPattern("d. MMMM yyyy").withLocale(Locale.of("no", "NO"))
 val datetimeFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
+val yearMonthFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM")
 
-fun formatDate(formatter: DateTimeFormatter, context: CharSequence): String =
+fun formatDateTime(formatter: DateTimeFormatter, context: CharSequence): String =
     try {
         formatter.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parseBest(context))
     } catch (e: Exception) {
         formatter.format(DateTimeFormatter.ISO_DATE_TIME.parse(context))
     }
 
-fun registerNavHelpers(handlebars: Handlebars) {
+fun formatDate(formatter: DateTimeFormatter, context: CharSequence): String {
+    val dateSplit = context.split("-")
+    return try {
+        if (dateSplit.size == 2) formatter.format(yearMonthFormatter.parse(context))
+        else formatter.format(DateTimeFormatter.ISO_DATE.parse(context))
+    } catch (e: Exception) {
+        formatter.format(DateTimeFormatter.ISO_DATE.parse("$context-01"))
+    }
+}
+
+fun registerNavHelpers(
+    handlebars: Handlebars,
+    additionalHelpers: Map<String, Helper<*>> = emptyMap()
+) {
     handlebars.apply {
         registerHelper(
             "iso_to_nor_date",
             Helper<String> { context, _ ->
                 if (context == null) return@Helper ""
-                formatDate(dateFormat, context)
+                try {
+                    formatDateTime(dateFormat, context)
+                } catch (e: Exception) {
+                    formatDate(dateFormat, context)
+                }
             },
         )
 
@@ -38,7 +60,7 @@ fun registerNavHelpers(handlebars: Handlebars) {
             "iso_to_nor_datetime",
             Helper<String> { context, _ ->
                 if (context == null) return@Helper ""
-                formatDate(datetimeFormat, context)
+                formatDateTime(datetimeFormat, context)
             },
         )
 
@@ -46,7 +68,15 @@ fun registerNavHelpers(handlebars: Handlebars) {
             "iso_to_date",
             Helper<String> { context, _ ->
                 if (context == null) return@Helper ""
-                dateFormat.format(DateTimeFormatter.ISO_DATE.parse(context))
+                formatDate(dateFormat, context)
+            },
+        )
+
+        registerHelper(
+            "iso_to_year_month",
+            Helper<String> { context, _ ->
+                if (context == null) return@Helper ""
+                formatDate(yearMonthFormat, context)
             },
         )
 
@@ -75,14 +105,21 @@ fun registerNavHelpers(handlebars: Handlebars) {
         // Expects json-objects of the form { "fom": "2018-05-20", "tom": "2018-05-29" }
         registerHelper(
             "json_to_period",
-            Helper<String> { context, _ ->
-                if (context == null) {
-                    return@Helper ""
-                } else {
-                    val periode: Periode = PeriodeMapper.jsonTilPeriode(context)
-                    return@Helper periode.fom!!.format(dateFormat) +
-                        " - " +
-                        periode.tom!!.format(dateFormat)
+            Helper<Any> { context, _ ->
+                val jsonString: String? = when (context) {
+                    is String -> context
+                    else -> context?.let { objectMapper.writeValueAsString(it) }
+                }
+                when (jsonString) {
+                    null -> return@Helper ""
+                    else -> {
+                        val periode: Periode = PeriodeMapper.jsonTilPeriode(jsonString)
+                        if (periode.fom == null) return@Helper ""
+                        return@Helper periode.fom.format(dateFormat) +
+                            " - " +
+                            (periode.tom?.format(dateFormat)
+                                ?: periode.til?.format(dateFormat) ?: "")
+                    }
                 }
             },
         )
@@ -147,14 +184,14 @@ fun registerNavHelpers(handlebars: Handlebars) {
         registerHelper(
             "image",
             Helper<String> { context, _ ->
-                if (context == null) "" else PDFgen.getEnvironment().images[context]
+                if (context == null) "" else PDFGenCore.environment.images[context]
             },
         )
 
         registerHelper(
             "resource",
             Helper<String> { context, _ ->
-                PDFgen.getEnvironment().resources[context]?.toString(Charsets.UTF_8) ?: ""
+                PDFGenCore.environment.resources[context]?.toString(Charsets.UTF_8) ?: ""
             },
         )
 
@@ -321,7 +358,53 @@ fun registerNavHelpers(handlebars: Handlebars) {
                 }
             },
         )
+
+        registerHelper(
+            "filter",
+            Helper<Iterable<Any>> { list, options ->
+                val filterByField = options.param(0, null as String?)
+                val filterByValue = options.param(1, null as String?)
+                val buffer = options.buffer()
+                if (list is JsonNode) {
+                    val filteredList =
+                        list.filter { getParameterValue(it, filterByField) == filterByValue }
+                    filteredList.forEachIndexed { _, it -> buffer.append(options.fn(it)) }
+                }
+
+                buffer
+            },
+        )
+        registerHelper(
+            "concat",
+            Helper<String> { firstValue, options ->
+                val values = listOf(firstValue) + options.params
+                values.joinToString(" ")
+            },
+        )
+        registerHelper(
+            "stringify",
+            Helper<Any> { value, _ -> objectMapper.writeValueAsString(value) },
+        )
+
+        registerHelper(
+            "now",
+            Helper<Any> { _, _ -> LocalDateTime.now().toString()}
+        )
+
+        registerHelper(
+            "now_date",
+            Helper<Any> { _, _ -> LocalDate.now().toString()}
+        )
+
+        additionalHelpers.forEach { (t, u) -> registerHelper(t, u) }
     }
+}
+
+private fun getParameterValue(jsonNode: JsonNode, parameterPathString: String?): String {
+    val parameterPath = parameterPathString?.split(".") ?: emptyList()
+    var tempJsonNode = jsonNode
+    parameterPath.forEach { parameter -> tempJsonNode = tempJsonNode.get(parameter) }
+    return tempJsonNode.asText()
 }
 
 private fun String.capitalizeWords(wordSplitter: String) =

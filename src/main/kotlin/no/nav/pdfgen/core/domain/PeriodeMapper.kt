@@ -11,8 +11,11 @@ object PeriodeMapper {
 
     internal fun jsonTilPeriode(json: String): Periode {
         try {
-            val periode = objectMapper.readValue(json, Periode::class.java)
-            if (periode.tom == null || periode.fom == null || periode.fom.isAfter(periode.tom)) {
+            val periode = objectMapper.readValue(json, Periode::class.java) ?: return Periode()
+            if (periode.tom != null && (periode.fom == null || periode.fom.isAfter(periode.tom))) {
+                throw IllegalArgumentException()
+            }
+            if (periode.til != null && (periode.fom == null || periode.fom.isAfter(periode.til))) {
                 throw IllegalArgumentException()
             }
             return periode

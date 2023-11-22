@@ -4,13 +4,13 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
 import com.openhtmltopdf.svgsupport.BatikSVGDrawer
 import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.pdfgen.core.PDFGenCore
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.Calendar
 import javax.imageio.ImageIO
-import no.nav.pdfgen.core.PDFgen
 import no.nav.pdfgen.core.util.scale
 import no.nav.pdfgen.core.util.toPortait
 import org.apache.pdfbox.pdmodel.PDDocument
@@ -34,7 +34,9 @@ import org.verapdf.pdfa.results.TestAssertion
 private val log = KotlinLogging.logger {}
 
 fun createPDFA(template: String, directoryName: String, jsonPayload: JsonNode? = null): ByteArray? {
-    val html = jsonPayload?.let { createHtml(template, directoryName, it) } ?: createHtmlFromTemplateData(template, directoryName)
+    val html =
+        jsonPayload?.let { createHtml(template, directoryName, it) }
+            ?: createHtmlFromTemplateData(template, directoryName)
     return html?.let { createPDFA(it) }
 }
 fun createPDFA(html: String): ByteArray {
@@ -43,7 +45,7 @@ fun createPDFA(html: String): ByteArray {
             .apply {
                 PdfRendererBuilder()
                     .apply {
-                        for (font in PDFgen.getEnvironment().fonts) {
+                        for (font in PDFGenCore.environment.fonts) {
                             useFont(
                                 { ByteArrayInputStream(font.bytes) },
                                 font.family,
@@ -55,7 +57,7 @@ fun createPDFA(html: String): ByteArray {
                     }
                     .usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_2_A)
                     .usePdfUaAccessbility(true)
-                    .useColorProfile(PDFgen.getEnvironment().colorProfile)
+                    .useColorProfile(PDFGenCore.environment.colorProfile)
                     .useSVGDrawer(BatikSVGDrawer())
                     .withHtmlContent(html, null)
                     .toStream(this)
@@ -87,7 +89,7 @@ fun createPDFA(imageStream: InputStream, outputStream: OutputStream) {
 
         try {
             val dc = xmp.createAndAddDublinCoreSchema()
-            dc.addCreator("pdfgen")
+            dc.addCreator("pdfgen-coree")
             dc.addDate(cal)
 
             val id = xmp.createAndAddPFAIdentificationSchema()
@@ -105,7 +107,7 @@ fun createPDFA(imageStream: InputStream, outputStream: OutputStream) {
             throw IllegalArgumentException(e)
         }
 
-        val intent = PDOutputIntent(document, PDFgen.getEnvironment().colorProfile.inputStream())
+        val intent = PDOutputIntent(document, PDFGenCore.environment.colorProfile.inputStream())
         intent.info = "sRGB IEC61966-2.1"
         intent.outputCondition = "sRGB IEC61966-2.1"
         intent.outputConditionIdentifier = "sRGB IEC61966-2.1"

@@ -12,20 +12,60 @@ Repository for `pdfgen-core`, an application written in Kotlin used to create PD
 
 ## Getting started
 
-Most commonly, pdfgen-core is used with templates, fonts, additional resources, and potential test data to verify that valid PDFs get produced by the aforementioned templates.
+pdfgen-core is used with templates, fonts, additional resources, and potential test data to verify that valid PDFs get produced by the templates.
 
 Check GitHub releases to find the latest `release` version 
 Check [Github releases](https://github.com/navikt/pdfgen-core/releases) to find the latest `release` version
 
-In your own repository create subfolders in `templates` and `data`
-```bash
-mkdir {templates,data}/directory_name # directory_name can be anything, but it'll be a necessary part of the API later
-````
-* `templates/directory_name/` should then be populated with your .hbs-templates. the names of these templates will also decide parts of the API paths
-* `data/directory_name/` should be populated with json files with names corresponding to a target .hbs-template, this can be used to test your PDFs during development of templates.
+In your own repository create folders `templates`, `resources` and `data` on root of you repository
+* `templates`
+    Create subfolder inside `templates` folder
+    ```bash
+    mkdir {templates}/directory_name # directory_name can be anything, but it'll be a necessary part of the API later
+    ````
+  * `templates/directory_name/` should then be populated with your .hbs-templates. the names of these templates will also decide parts of the API paths
+    
+* `resources` should contain additional resources (ex images) which can be referred in your .hbs-templates
+* `data` should contain test JSON data that can be used to verify that valid PDFs get produced by templates. `data` folder should have same subdirectory structure as `templates`. [Example](#generating-HTML-from-predefined-JSON-data-in-data-folder) how you can produce HTML and PDF with test data
 
-Additionally create subfolder `resources` containing additional resources which can be referred in your .hbs-templates
 
+### Initialize pdfgen-core
+#### Initialize with custom handlebar helpers
+You can initialize pdfgen-core with additional handlebar helpers:
+```kotlin
+PDFGenCore.init(Environment(additionalHandlebarHelpers = mapOf(
+    "enum_to_readable" to Helper<String> { context, _ ->
+        when(context){
+            "SOME_ENUM_VALUE" -> "Human readable text"
+            else -> ""
+        }
+    },
+)))
+```
+#### Initialize with alternative path to `templates`, `resources` folder
+```kotlin
+PDFGenCore.init(
+Environment(
+    additionalHandlebarHelpers = mapOf(
+        "enum_to_readable" to Helper<String> { context, _ ->
+            when (context) {
+                "BIDRAGSMOTTAKER" -> "Bidragsmottaker"
+                else -> ""
+            }
+        },
+    ),
+    templateRoot = PDFGenResource("/path/to/templates"),
+    resourcesRoot = PDFGenResource("/path/to/resources"),
+),
+)
+```
+
+#### Reload templates and resources from disk
+You can reload the resources and templates from disk using the following method.
+This will be especially useful for when developing templates and should be executed before generating HTML or PDF such that the updated templates and data are loaded from disk
+```kotlin
+PDFGenCore.reloadEnvironment()
+```
 
 ### Example usage
 #### Generating HTML from predefined JSON data in data-folder
@@ -49,11 +89,89 @@ val pdfBytes: ByteArray = createPDFA(html)
 val pdfBytes: ByteArray = createPDFA(template, directoryName, jsonNode)
 ```
 
+## Handlerbars helpers
+Example of usage of handlebar helpers defined in this library
+
+### {{filter}}
+
+Filter array of objects by fieldvalue
+
+**Example data**
+
+```json
+{
+  "roller": [
+    {
+      "type": "BARN",
+      "navn": "Barn1 Etternavn"
+    },
+    {
+      "type": "BARN",
+      "navn": "Barn2 Etternavn"
+    },
+    {
+      "type": "FORELDRE",
+      "navn": "Mor Etternavn"
+    }
+  ]
+}
+```
+
+**Params**
+
+* `json` **{List}** List of JSON values
+* `fieldname` **{String}** Fieldname used for filtering
+* `value` **{String}** Value to filter by
+* `returns` **{List}** Filtered list
+
+**Example**
+
+```handlebars
+{{#filter roller "type" "BARN" as |barn|}}
+   <div>{{ barn.navn }}</div>
+{{/filter}}
+
+```
+
+### {{json_to_period}}
+
+Format json with parameters `fom`, `tom`/`til` as period string
+
+**Example data**
+
+```json
+{
+  "periode": {
+    "fom": "2020-03-20",
+    "tom": "2021-09-23"
+  }
+}
+```
+
+**Params**
+
+* `json` **{Periode}** Object with fields `fom` and `tom` or`til`
+* `returns` **{List}** Formatted date (ex `20.03.2020 - 23.09.2021`)
+
+**Example**
+
+```handlebars
+{{json_to_period periode}}
+```
 ## Developing pdfgen-core
 
 ### Build and run tests
-`./gradlew shadowJar`
+`./gradlew build`
 
+### Publish to local maven repository
+Run the following command
+`./gradlew publishToMavenLocal` (or `./gradlew -t publishToMavenLocal` if you want to enable autobuild on changes)
+
+This will publish `pdfgen-core` to local maven repository with version `local-build`
+
+You can then import `pdfgen-core` to your gradle project with
+
+`implementation("no.nav.pdfgen:pdfgen-core:local-build")`
 ### Upgrading the gradle wrapper
 Find the newest version of gradle here: https://gradle.org/releases/ Then run this command:
 

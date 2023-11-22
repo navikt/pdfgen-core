@@ -13,4 +13,3 @@ val OPENHTMLTOPDF_RENDERING_SUMMARY: Summary =
         .help("Time it takes to render a PDF")
         .labelNames("application_name", "template_type")
         .register()
-
