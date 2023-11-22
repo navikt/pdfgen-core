@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/navikt/pdfgen-core/compare/1.0.3...1.1.0) (2023-11-22)
+
+
+### Features
+
+* Refactoring and add PDFGenCore initializer method ([#10](https://github.com/navikt/pdfgen-core/issues/10)) ([ea1e8bf](https://github.com/navikt/pdfgen-core/commit/ea1e8bf9a1ff206f2fbd0b1cb4d8fc99e97ea0c1))
+
 ## [1.0.3](https://github.com/navikt/pdfgen-core/compare/1.0.2...1.0.3) (2023-11-15)
 
 
