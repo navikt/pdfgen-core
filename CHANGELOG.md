@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/navikt/pdfgen-core/compare/v1.1.1...v1.1.2) (2023-12-19)
+
+
+### Bug Fixes
+
+* bumped gradle wrapper to 8.5 ([#26](https://github.com/navikt/pdfgen-core/issues/26)) ([39c6494](https://github.com/navikt/pdfgen-core/commit/39c64947fb445c50620eab5fdc0b1674f9121fa6))
+
 ## [1.1.1](https://github.com/navikt/pdfgen-core/compare/1.1.0...v1.1.1) (2023-12-19)
 
 
