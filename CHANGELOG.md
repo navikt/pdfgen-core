@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/navikt/pdfgen-core/compare/v1.1.2...v1.1.3) (2023-12-19)
+
+
+### Bug Fixes
+
+* Release please action fix ([#28](https://github.com/navikt/pdfgen-core/issues/28)) ([72e7918](https://github.com/navikt/pdfgen-core/commit/72e79181f700c3257bed300107804c661712377f))
+
 ## [1.1.2](https://github.com/navikt/pdfgen-core/compare/v1.1.1...v1.1.2) (2023-12-19)
 
 
