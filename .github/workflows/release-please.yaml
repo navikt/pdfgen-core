@@ -35,7 +35,8 @@ jobs:
         with:
           release-type: simple
           package-name: pdfgen-core
-          include-v-in-tag: false
+          config-file: .github/release-please-config.json
+          manifest-file: .release-please-config.json
       - name: Upload to github packages
         if: ${{ steps.release.outputs.release_created }}
         run: ./gradlew -Pversion=${{ steps.release.outputs.tag_name}} publish
