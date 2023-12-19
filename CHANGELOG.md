@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/navikt/pdfgen-core/compare/1.1.0...v1.1.1) (2023-12-19)
+
+
+### Bug Fixes
+
+* bump io.github.oshai:kotlin-logging-jvm from 5.1.1 to 6.0.0 ([#24](https://github.com/navikt/pdfgen-core/issues/24)) ([0265eec](https://github.com/navikt/pdfgen-core/commit/0265eec9a869818e09bfb82e48fab93c81f6ee5d))
+
 ## [1.1.0](https://github.com/navikt/pdfgen-core/compare/1.0.3...1.1.0) (2023-11-22)
 
 
