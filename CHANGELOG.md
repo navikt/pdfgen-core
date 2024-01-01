@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.5](https://github.com/navikt/pdfgen-core/compare/v1.1.4...v1.1.5) (2024-01-01)
+
+
+### Bug Fixes
+
+* bump jacksonVersion from 2.16.0 to 2.16.1 ([#33](https://github.com/navikt/pdfgen-core/issues/33)) ([76b8ebf](https://github.com/navikt/pdfgen-core/commit/76b8ebff52c39c1733ca5373d718c7beaa4b598b))
+
 ## [1.1.4](https://github.com/navikt/pdfgen-core/compare/v1.1.3...v1.1.4) (2024-01-01)
 
 
