@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.4](https://github.com/navikt/pdfgen-core/compare/v1.1.3...v1.1.4) (2024-01-01)
+
+
+### Bug Fixes
+
+* bump io.github.oshai:kotlin-logging-jvm from 6.0.0 to 6.0.1 ([#30](https://github.com/navikt/pdfgen-core/issues/30)) ([8ec1941](https://github.com/navikt/pdfgen-core/commit/8ec19416b89ab5e0169e7d61ac74e73bb272f5dc))
+* bump jvm from 1.9.21 to 1.9.22 ([#32](https://github.com/navikt/pdfgen-core/issues/32)) ([465efde](https://github.com/navikt/pdfgen-core/commit/465efdea921e331525168fe263eda45e66851c3f))
+* bump org.jsoup:jsoup from 1.17.1 to 1.17.2 ([#34](https://github.com/navikt/pdfgen-core/issues/34)) ([66a0648](https://github.com/navikt/pdfgen-core/commit/66a06489c4d741bd665b80ec134618ff7079f8de))
+
 ## [1.1.3](https://github.com/navikt/pdfgen-core/compare/v1.1.2...v1.1.3) (2023-12-19)
 
 
