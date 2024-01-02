@@ -1,9 +1,0 @@
-{
-  "include-v-in-tag": false,
-  "packages": {
-    ".": {
-      "package-name": "pdfgen-core",
-      "include-v-in-tag": false
-    }
-  }
-}

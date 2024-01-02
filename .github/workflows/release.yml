@@ -1,0 +1,37 @@
+name: Publish main
+on:
+  release:
+    types: [published]
+
+permissions:
+  packages: write
+
+env:
+  NEW_VERSION: ${{ github.event.release.tag_name }}
+
+jobs:
+  build:
+    name: Build and publish docker image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          architecture: x64
+          cache: 'gradle'
+      - name: Build gradle artifacts
+        shell: bash
+        run: |
+          ./gradlew shadowJar
+        env:
+          ORG_GRADLE_PROJECT_githubUser: x-access-token
+          ORG_GRADLE_PROJECT_githubPassword: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload artifact
+        run: ./gradlew -Pversion=${{ env.NEW_VERSION }} publish
+        env:
+          GITHUB_USERNAME: x-access-token
+          GITHUB_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
