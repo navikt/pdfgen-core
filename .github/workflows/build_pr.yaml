@@ -3,7 +3,9 @@ on:
   push:
     branches-ignore:
       - main
-
+  pull_request:
+    types: [opened, reopened, synchronize]
+    
 permissions:
   contents: write
   pull-requests: write
