@@ -9,7 +9,6 @@ import com.github.jknack.handlebars.JsonNodeValueResolver
 import com.github.jknack.handlebars.context.MapValueResolver
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldInclude
 import io.kotest.matchers.string.shouldNotInclude
 import no.nav.pdfgen.core.Environment
@@ -23,6 +22,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 fun String.toJson(): JsonNode = objectMapper.readTree(this)
+
 internal class HelperTest {
 
     val jsonNodeFactory = JsonNodeFactory.instance
@@ -131,7 +131,8 @@ internal class HelperTest {
     @Test
     internal fun `Should filter list of object based on parameter`() {
         @Language("Json")
-        val jsonString = """
+        val jsonString =
+            """
           {
               "roller": [
                 {
@@ -148,13 +149,18 @@ internal class HelperTest {
                 }
               ]
           }
-        """.trimIndent()
+        """
+                .trimIndent()
 
-        val template = handlebars.compileInline("""
+        val template =
+            handlebars.compileInline(
+                """
                    {{#filter roller "type" "BARN" as |barn|}}
                          {{barn.navn}}
                     {{/filter}}
-                """.trimIndent())
+                """
+                    .trimIndent()
+            )
 
         val result = template.apply(jsonContext(jsonString.toJson()))
         result shouldInclude "Barn1 Etternavn"
@@ -165,18 +171,24 @@ internal class HelperTest {
     @Test
     internal fun `json_to_period should convert to date with fom and tom`() {
         @Language("Json")
-        val jsonString = """
+        val jsonString =
+            """
           {
               "periode": {
                 "fom": "2020-03-20",
                 "tom": "2021-09-23"
               }
           }
-        """.trimIndent()
+        """
+                .trimIndent()
 
-        val template = handlebars.compileInline("""
+        val template =
+            handlebars.compileInline(
+                """
                    {{json_to_period periode}}
-                """.trimIndent())
+                """
+                    .trimIndent()
+            )
 
         val result = template.apply(jsonContext(jsonString.toJson()))
         result shouldBe "20.03.2020 - 23.09.2021"
@@ -185,18 +197,24 @@ internal class HelperTest {
     @Test
     internal fun `json_to_period should convert to date with fom and til`() {
         @Language("Json")
-        val jsonString = """
+        val jsonString =
+            """
           {
               "periode": {
                 "fom": "2020-03-20",
                 "til": "2021-09-23"
               }
           }
-        """.trimIndent()
+        """
+                .trimIndent()
 
-        val template = handlebars.compileInline("""
+        val template =
+            handlebars.compileInline(
+                """
                    {{json_to_period periode}}
-                """.trimIndent())
+                """
+                    .trimIndent()
+            )
 
         val result = template.apply(jsonContext(jsonString.toJson()))
         result shouldBe "20.03.2020 - 23.09.2021"
@@ -205,15 +223,21 @@ internal class HelperTest {
     @Test
     internal fun `json_to_period should convert to date with fom and tom as string`() {
         @Language("Json")
-        val jsonString = """
+        val jsonString =
+            """
           {
               "periode": "{\"fom\": \"2019-08-09\", \"tom\": \"2019-08-10\"}"
           }
-        """.trimIndent()
+        """
+                .trimIndent()
 
-        val template = handlebars.compileInline("""
+        val template =
+            handlebars.compileInline(
+                """
                    {{json_to_period periode}}
-                """.trimIndent())
+                """
+                    .trimIndent()
+            )
 
         val result = template.apply(jsonContext(jsonString.toJson()))
         result shouldBe "09.08.2019 - 10.08.2019"
@@ -222,17 +246,23 @@ internal class HelperTest {
     @Test
     internal fun `json_to_period should convert to date with tom empty`() {
         @Language("Json")
-        val jsonString = """
+        val jsonString =
+            """
           {
               "periode": {
                 "fom": "2020-03-20"
               }
           }
-        """.trimIndent()
+        """
+                .trimIndent()
 
-        val template = handlebars.compileInline("""
+        val template =
+            handlebars.compileInline(
+                """
                    {{json_to_period periode}}
-                """.trimIndent())
+                """
+                    .trimIndent()
+            )
 
         val result = template.apply(jsonContext(jsonString.toJson()))
         result shouldBe "20.03.2020 - "
@@ -353,7 +383,8 @@ internal class HelperTest {
             )
 
         handlebars.compileInline("{{ iso_to_nor_date date }}").apply(context) shouldBe "03.03.2020"
-        handlebars.compileInline("{{ iso_to_nor_date dateWithoutDay }}").apply(context) shouldBe "01.03.2020"
+        handlebars.compileInline("{{ iso_to_nor_date dateWithoutDay }}").apply(context) shouldBe
+            "01.03.2020"
     }
 
     @Test
@@ -367,8 +398,10 @@ internal class HelperTest {
             )
 
         handlebars.compileInline("{{ iso_to_year_month date }}").apply(context) shouldBe "03.2020"
-        handlebars.compileInline("{{ iso_to_year_month dateWithDay }}").apply(context) shouldBe "03.2020"
+        handlebars.compileInline("{{ iso_to_year_month dateWithDay }}").apply(context) shouldBe
+            "03.2020"
     }
+
     @Test
     internal fun `Datetime formatting should format timestamp as Norwegian long date`() {
         val context =
@@ -1547,6 +1580,7 @@ internal class HelperTest {
                 },
             )
 
-        handlebars.compileInline("{{concat value1 value2 value3 }}").apply(context) shouldBe "Value1 123123 value3"
+        handlebars.compileInline("{{concat value1 value2 value3 }}").apply(context) shouldBe
+            "Value1 123123 value3"
     }
 }

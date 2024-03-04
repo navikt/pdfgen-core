@@ -4,13 +4,13 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
 import com.openhtmltopdf.svgsupport.BatikSVGDrawer
 import io.github.oshai.kotlinlogging.KotlinLogging
-import no.nav.pdfgen.core.PDFGenCore
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.Calendar
 import javax.imageio.ImageIO
+import no.nav.pdfgen.core.PDFGenCore
 import no.nav.pdfgen.core.util.scale
 import no.nav.pdfgen.core.util.toPortait
 import org.apache.pdfbox.pdmodel.PDDocument
@@ -39,6 +39,7 @@ fun createPDFA(template: String, directoryName: String, jsonPayload: JsonNode? =
             ?: createHtmlFromTemplateData(template, directoryName)
     return html?.let { createPDFA(it) }
 }
+
 fun createPDFA(html: String): ByteArray {
     val pdf =
         ByteArrayOutputStream()

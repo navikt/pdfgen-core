@@ -12,7 +12,9 @@ class PDFGenCore {
             coreEnvironment.set(initialEnvironment)
         }
 
-        val environment: Environment get() = coreEnvironment.get()
+        val environment: Environment
+            get() = coreEnvironment.get()
+
         fun reloadEnvironment() {
             log.debug { "Reloading environment" }
             coreEnvironment.set(coreEnvironment.get().copy())

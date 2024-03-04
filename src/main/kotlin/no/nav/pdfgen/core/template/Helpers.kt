@@ -5,15 +5,15 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Helper
-import no.nav.pdfgen.core.PDFGenCore
-import no.nav.pdfgen.core.domain.Periode
-import no.nav.pdfgen.core.domain.PeriodeMapper
-import no.nav.pdfgen.core.objectMapper
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Locale
+import no.nav.pdfgen.core.PDFGenCore
+import no.nav.pdfgen.core.domain.Periode
+import no.nav.pdfgen.core.domain.PeriodeMapper
+import no.nav.pdfgen.core.objectMapper
 
 val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 val yearMonthFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("MM.yyyy")
@@ -106,10 +106,11 @@ fun registerNavHelpers(
         registerHelper(
             "json_to_period",
             Helper<Any> { context, _ ->
-                val jsonString: String? = when (context) {
-                    is String -> context
-                    else -> context?.let { objectMapper.writeValueAsString(it) }
-                }
+                val jsonString: String? =
+                    when (context) {
+                        is String -> context
+                        else -> context?.let { objectMapper.writeValueAsString(it) }
+                    }
                 when (jsonString) {
                     null -> return@Helper ""
                     else -> {
@@ -386,15 +387,9 @@ fun registerNavHelpers(
             Helper<Any> { value, _ -> objectMapper.writeValueAsString(value) },
         )
 
-        registerHelper(
-            "now",
-            Helper<Any> { _, _ -> LocalDateTime.now().toString()}
-        )
+        registerHelper("now", Helper<Any> { _, _ -> LocalDateTime.now().toString() })
 
-        registerHelper(
-            "now_date",
-            Helper<Any> { _, _ -> LocalDate.now().toString()}
-        )
+        registerHelper("now_date", Helper<Any> { _, _ -> LocalDate.now().toString() })
 
         additionalHelpers.forEach { (t, u) -> registerHelper(t, u) }
     }

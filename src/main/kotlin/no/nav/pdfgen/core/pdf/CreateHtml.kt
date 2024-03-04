@@ -27,16 +27,14 @@ fun createHtmlFromTemplateData(template: String, directoryName: String): String?
 fun render(directoryName: String, template: String, jsonNode: JsonNode): String? {
     return HANDLEBARS_RENDERING_SUMMARY.startTimer()
         .use {
-            PDFGenCore.environment
-                .templates[directoryName to template]
-                ?.apply(
-                    Context.newBuilder(jsonNode)
-                        .resolver(
-                            JsonNodeValueResolver.INSTANCE,
-                            MapValueResolver.INSTANCE,
-                        )
-                        .build(),
-                )
+            PDFGenCore.environment.templates[directoryName to template]?.apply(
+                Context.newBuilder(jsonNode)
+                    .resolver(
+                        JsonNodeValueResolver.INSTANCE,
+                        MapValueResolver.INSTANCE,
+                    )
+                    .build(),
+            )
         }
         ?.let { html ->
             log.debug { "${"Generated HTML {}"} ${StructuredArguments.keyValue("html", html)}" }
