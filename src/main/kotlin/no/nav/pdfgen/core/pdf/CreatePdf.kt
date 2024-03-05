@@ -93,7 +93,7 @@ fun createPDFA(imageStream: InputStream, outputStream: OutputStream) {
             dc.addCreator("pdfgen-coree")
             dc.addDate(cal)
 
-            val id = xmp.createAndAddPDFAIdentificationSchema()
+            val id = xmp.createAndAddPFAIdentificationSchema()
             id.part = 2
             id.conformance = "U"
 
