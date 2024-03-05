@@ -63,8 +63,9 @@ repositories {
         url = uri("https://maven.pkg.github.com/openhtmltopdf/openhtmltopdf")
         credentials {
             username = System.getenv("GITHUB_USERNAME")
-            password = System.getenv("GITHUB_TOKEN")
+            password = System.getenv("GITHUB_PASSWORD")
         }
+
     }
 }
 
