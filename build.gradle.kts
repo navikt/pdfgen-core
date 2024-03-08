@@ -4,7 +4,7 @@ println(version)
 
 val handlebarsVersion = "4.3.1"
 val jacksonVersion = "2.16.1"
-val jaxbVersion = "4.0.4"
+val jaxbVersion = "4.0.5"
 val jaxbApiVersion = "2.3.1"
 val jsoupVersion = "1.17.2"
 val kluentVersion = "1.72"
