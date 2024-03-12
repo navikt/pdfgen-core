@@ -17,7 +17,7 @@ val junitJupiterVersion = "5.10.2"
 val verapdfVersion = "1.24.1"
 val ktfmtVersion = "0.44"
 val kotlinloggerVersion = "6.0.3"
-val kotestVersion = "5.8.0"
+val kotestVersion = "5.8.1"
 val javaVersion = JavaVersion.VERSION_21
 
 
