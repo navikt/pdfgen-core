@@ -338,6 +338,24 @@ internal class HelperTest {
         assertEquals("", handlebars.compileInline("{{#any d e f g}}YES{{/any}}").apply(context))
     }
 
+
+    @Test
+    internal fun `Datetime with seconds formatting should format as Norwegian short date and time with seconds`() {
+        val context =
+            jsonContext(
+                jsonNodeFactory.objectNode().apply {
+                    put("timestamp", "2020-03-03T10:15:30")
+                    put("timestampLong", "2020-10-03T10:15:30")
+                    put("date", "2020-02-12")
+                },
+            )
+
+        assertEquals(
+            "03.03.2020 10:15:30",
+            handlebars.compileInline("{{ iso_to_nor_datetime_seconds timestamp }}").apply(context),
+        )
+    }
+
     @Test
     internal fun `Datetime formatting should format as Norwegian short date and time`() {
         val context =

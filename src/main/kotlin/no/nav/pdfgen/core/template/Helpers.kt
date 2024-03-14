@@ -20,6 +20,7 @@ val yearMonthFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("MM.yyyy")
 val dateFormatLong: DateTimeFormatter =
     DateTimeFormatter.ofPattern("d. MMMM yyyy").withLocale(Locale.of("no", "NO"))
 val datetimeFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
+val datetimeSecondsFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
 val yearMonthFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM")
 
 fun formatDateTime(formatter: DateTimeFormatter, context: CharSequence): String =
@@ -61,6 +62,14 @@ fun registerNavHelpers(
             Helper<String> { context, _ ->
                 if (context == null) return@Helper ""
                 formatDateTime(datetimeFormat, context)
+            },
+        )
+
+        registerHelper(
+            "iso_to_nor_datetime_seconds",
+            Helper<String> { context, _ ->
+                if (context == null) return@Helper ""
+                formatDateTime(datetimeSecondsFormat, context)
             },
         )
 
