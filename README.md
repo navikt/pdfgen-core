@@ -172,6 +172,14 @@ This will publish `pdfgen-core` to local maven repository with version `local-bu
 You can then import `pdfgen-core` to your gradle project with
 
 `implementation("no.nav.pdfgen:pdfgen-core:local-build")`
+
+### Release
+We use default github release, 
+This project uses [semantic versioning](https://semver.org/) and does NOT prefix tags or release titles with `v` i.e. use `1.2.3` instead of `v1.2.3` 
+
+see guide about how to relese:[creating release github](
+https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository#creating-a-release)
+
 ### Upgrading the gradle wrapper
 Find the newest version of gradle here: https://gradle.org/releases/ Then run this command:
 
