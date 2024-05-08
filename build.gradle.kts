@@ -8,7 +8,6 @@ val jaxbVersion = "4.0.5"
 val jaxbApiVersion = "2.3.1"
 val jsoupVersion = "1.17.2"
 val kluentVersion = "1.72"
-val ktorVersion = "2.3.5"
 val logbackVersion = "1.5.6"
 val logstashEncoderVersion = "7.4"
 val openHtmlToPdfVersion = "pdfbox2-65c2c5010f84b2daa5821971c9c68cd330463830"
@@ -22,7 +21,7 @@ val javaVersion = JavaVersion.VERSION_21
 
 
 plugins {
-    kotlin("jvm") version "1.9.23"
+    kotlin("jvm") version "1.9.24"
     id("com.diffplug.spotless") version "6.25.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("com.github.ben-manes.versions") version "0.51.0"
@@ -83,9 +82,6 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
     implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
     implementation("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
-
-    implementation("io.prometheus:simpleclient_common:$prometheusVersion")
-    implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
 
     implementation("org.verapdf:validation-model:$verapdfVersion")
     implementation("io.github.oshai:kotlin-logging-jvm:$kotlinloggerVersion")
