@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 group = "no.nav.pdfgen"
 version = properties["version"]?.takeIf { it is String && it.isNotEmpty() && it != "unspecified" } ?: "local-build"
 println(version)
@@ -17,7 +19,7 @@ val verapdfVersion = "1.26.1"
 val ktfmtVersion = "0.44"
 val kotlinloggerVersion = "6.0.9"
 val kotestVersion = "5.9.0"
-val javaVersion = JavaVersion.VERSION_21
+val javaVersion = JvmTarget.JVM_21
 
 
 plugins {
@@ -29,8 +31,13 @@ plugins {
     id("java-library")
 }
 
-tasks {
+kotlin {
+    compilerOptions {
+        jvmTarget.set(javaVersion)
+    }
+}
 
+tasks {
     test {
         useJUnitPlatform()
         testLogging {
@@ -38,13 +45,6 @@ tasks {
             showStackTraces = true
             exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
         }
-    }
-
-    compileKotlin {
-        kotlinOptions.jvmTarget = javaVersion.toString()
-    }
-    compileTestKotlin {
-        kotlinOptions.jvmTarget = javaVersion.toString()
     }
 
     spotless {
