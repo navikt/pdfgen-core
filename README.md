@@ -1,6 +1,9 @@
 # pdfgen-core
 Repository for `pdfgen-core`, an application written in Kotlin used to create PDFs and HTMLs
 
+![GitHub Release](https://img.shields.io/github/v/release/navikt/pdfgen-core)
+
+
 ## Technologies & Tools
 * Kotlin
 * Gradle
