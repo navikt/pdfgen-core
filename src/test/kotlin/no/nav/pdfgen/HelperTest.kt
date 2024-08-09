@@ -338,7 +338,6 @@ internal class HelperTest {
         assertEquals("", handlebars.compileInline("{{#any d e f g}}YES{{/any}}").apply(context))
     }
 
-
     @Test
     internal fun `Datetime with seconds formatting should format as Norwegian short date and time with seconds`() {
         val context =
