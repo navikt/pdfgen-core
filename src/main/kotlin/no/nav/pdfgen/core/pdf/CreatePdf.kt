@@ -63,7 +63,7 @@ fun createPDFA(html: String): ByteArray {
                                     )
                             ttf.isEnableGsub = false
                             useFont(
-                                PDFontSupplier(PDType0Font.load(PDDocument(), ttf, true)),
+                                PDFontSupplier(PDType0Font.load(PDDocument(), ttf, font.subset)),
                                 font.family,
                                 font.weight,
                                 font.style,
