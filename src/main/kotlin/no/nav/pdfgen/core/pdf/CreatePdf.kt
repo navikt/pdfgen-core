@@ -1,6 +1,7 @@
 package no.nav.pdfgen.core.pdf
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.openhtmltopdf.pdfboxout.PDFontSupplier
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
 import com.openhtmltopdf.svgsupport.BatikSVGDrawer
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -13,6 +14,9 @@ import javax.imageio.ImageIO
 import no.nav.pdfgen.core.PDFGenCore
 import no.nav.pdfgen.core.util.scale
 import no.nav.pdfgen.core.util.toPortait
+import org.apache.fontbox.ttf.TTFParser
+import org.apache.fontbox.ttf.TrueTypeFont
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
@@ -20,6 +24,7 @@ import org.apache.pdfbox.pdmodel.common.PDMetadata
 import org.apache.pdfbox.pdmodel.common.PDRectangle
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDMarkInfo
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot
+import org.apache.pdfbox.pdmodel.font.PDType0Font
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent
 import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory
 import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferences
@@ -41,18 +46,24 @@ fun createPDFA(template: String, directoryName: String, jsonPayload: JsonNode? =
 }
 
 fun createPDFA(html: String): ByteArray {
+
     val pdf =
         ByteArrayOutputStream()
             .apply {
                 PdfRendererBuilder()
                     .apply {
                         for (font in PDFGenCore.environment.fonts) {
+                            val ttf = TTFParser().parse(
+                                RandomAccessReadBufferedFile(
+                                            "${PDFGenCore.environment.fontsRoot.path}/${font.path}"
+                                        )
+                                    ).also { it.isEnableGsub = false }
                             useFont(
-                                { ByteArrayInputStream(font.bytes) },
+                                PDFontSupplier(PDType0Font.load(PDDocument(), ttf, font.subset)),
                                 font.family,
                                 font.weight,
                                 font.style,
-                                font.subset,
+                                font.subset
                             )
                         }
                     }
@@ -93,7 +104,7 @@ fun createPDFA(imageStream: InputStream, outputStream: OutputStream) {
             dc.addCreator("pdfgen-coree")
             dc.addDate(cal)
 
-            val id = xmp.createAndAddPFAIdentificationSchema()
+            val id = xmp.createAndAddPDFAIdentificationSchema()
             id.part = 2
             id.conformance = "U"
 

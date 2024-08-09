@@ -12,7 +12,7 @@ val jsoupVersion = "1.18.1"
 val kluentVersion = "1.72"
 val logbackVersion = "1.5.6"
 val logstashEncoderVersion = "8.0"
-val openHtmlToPdfVersion = "pdfbox2-65c2c5010f84b2daa5821971c9c68cd330463830"
+val openHtmlToPdfVersion = "1.1.21"
 val prometheusVersion = "0.16.0"
 val junitJupiterVersion = "5.10.3"
 val verapdfVersion = "1.26.1"
@@ -58,13 +58,6 @@ tasks {
 repositories {
     mavenCentral()
     mavenLocal()
-    maven {
-        url = uri("https://maven.pkg.github.com/openhtmltopdf/openhtmltopdf")
-        credentials {
-            username = System.getenv("GITHUB_USERNAME")
-            password = System.getenv("GITHUB_PASSWORD")
-        }
-    }
 }
 
 dependencies {
@@ -72,9 +65,9 @@ dependencies {
 
     implementation("com.github.jknack:handlebars:$handlebarsVersion")
     implementation("com.github.jknack:handlebars-jackson2:$handlebarsVersion")
-    implementation("at.datenwort.openhtmltopdf:openhtmltopdf-pdfbox:$openHtmlToPdfVersion")
-    implementation("at.datenwort.openhtmltopdf:openhtmltopdf-slf4j:$openHtmlToPdfVersion")
-    implementation("at.datenwort.openhtmltopdf:openhtmltopdf-svg-support:$openHtmlToPdfVersion")
+    implementation("io.github.openhtmltopdf:openhtmltopdf-pdfbox:$openHtmlToPdfVersion")
+    implementation("io.github.openhtmltopdf:openhtmltopdf-slf4j:$openHtmlToPdfVersion")
+    implementation("io.github.openhtmltopdf:openhtmltopdf-svg-support:$openHtmlToPdfVersion")
 
     implementation("org.jsoup:jsoup:$jsoupVersion")
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
