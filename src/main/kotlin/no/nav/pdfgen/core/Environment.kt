@@ -59,12 +59,12 @@ class Environment(
     }
 }
 
-data class PDFGenResource(val path: String) {
+data class PDFGenResource(val path: Path) {
 
-    private val _path: Path = Paths.get(path)
+    constructor(path: String) : this(Paths.get(path))
 
     fun readAllBytes(filename: String? = null): ByteArray {
-        val filePath = filename?.let { _path.resolve(it) } ?: _path
+        val filePath = filename?.let { path.resolve(it) } ?: path
         return if (filePath.exists()) filePath.readBytes()
         else
             Environment::class
@@ -77,7 +77,7 @@ data class PDFGenResource(val path: String) {
     fun toFile(filename: String? = null): File = getPath(filename).toFile()
 
     fun getPath(filename: String? = null): Path {
-        val filePath = filename?.let { _path.resolve(it) } ?: _path
+        val filePath = filename?.let { path.resolve(it) } ?: path
         log.trace { "Reading file from path $filePath. File exists on path = ${filePath.exists()}" }
         return if (filePath.exists()) filePath
         else
