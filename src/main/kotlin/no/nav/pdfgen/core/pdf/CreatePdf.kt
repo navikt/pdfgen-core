@@ -27,6 +27,7 @@ import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructur
 import org.apache.pdfbox.pdmodel.font.PDType0Font
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent
 import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory
 import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferences
 import org.apache.pdfbox.util.Matrix
 import org.apache.xmpbox.XMPMetadata
@@ -88,7 +89,14 @@ fun createPDFA(imageStream: InputStream, outputStream: OutputStream) {
 
         val quality = 1.0f
 
-        val pdImage = JPEGFactory.createFromImage(document, image, quality)
+        val pdImage = try {
+            JPEGFactory.createFromImage(document, image, quality)
+        } catch (e: javax.imageio.IIOException) {
+            // To avoid "javax.imageio.IIOException: Illegal band size: should be 0 < size <= 8"
+            // for certain black/white pictures
+            LosslessFactory.createFromImage(document, image)
+        }
+
         val imageSize = scale(pdImage, page)
 
         PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, false).use {
