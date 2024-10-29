@@ -15,7 +15,6 @@ import no.nav.pdfgen.core.PDFGenCore
 import no.nav.pdfgen.core.util.scale
 import no.nav.pdfgen.core.util.toPortait
 import org.apache.fontbox.ttf.TTFParser
-import org.apache.fontbox.ttf.TrueTypeFont
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
@@ -54,11 +53,14 @@ fun createPDFA(html: String): ByteArray {
                 PdfRendererBuilder()
                     .apply {
                         for (font in PDFGenCore.environment.fonts) {
-                            val ttf = TTFParser().parse(
-                                RandomAccessReadBufferedFile(
+                            val ttf =
+                                TTFParser()
+                                    .parse(
+                                        RandomAccessReadBufferedFile(
                                             "${PDFGenCore.environment.fontsRoot.path}/${font.path}"
                                         )
-                                    ).also { it.isEnableGsub = false }
+                                    )
+                                    .also { it.isEnableGsub = false }
                             useFont(
                                 PDFontSupplier(PDType0Font.load(PDDocument(), ttf, font.subset)),
                                 font.family,
@@ -89,13 +91,14 @@ fun createPDFA(imageStream: InputStream, outputStream: OutputStream) {
 
         val quality = 1.0f
 
-        val pdImage = try {
-            JPEGFactory.createFromImage(document, image, quality)
-        } catch (e: javax.imageio.IIOException) {
-            // To avoid "javax.imageio.IIOException: Illegal band size: should be 0 < size <= 8"
-            // for certain black/white pictures
-            LosslessFactory.createFromImage(document, image)
-        }
+        val pdImage =
+            try {
+                JPEGFactory.createFromImage(document, image, quality)
+            } catch (e: javax.imageio.IIOException) {
+                // To avoid "javax.imageio.IIOException: Illegal band size: should be 0 < size <= 8"
+                // for certain black/white pictures
+                LosslessFactory.createFromImage(document, image)
+            }
 
         val imageSize = scale(pdImage, page)
 

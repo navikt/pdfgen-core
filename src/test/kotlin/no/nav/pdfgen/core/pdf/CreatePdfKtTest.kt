@@ -1,12 +1,9 @@
 package no.nav.pdfgen.core.pdf
 
+import java.io.ByteArrayOutputStream
 import no.nav.pdfgen.getResource
-import org.apache.pdfbox.pdmodel.PDDocument
-import org.apache.pdfbox.text.PDFTextStripper
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 
 class CreatePdfKtTest {
     @Test
