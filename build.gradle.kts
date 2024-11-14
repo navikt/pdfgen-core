@@ -9,7 +9,6 @@ val jacksonVersion = "2.18.1"
 val jaxbVersion = "4.0.5"
 val jaxbApiVersion = "2.3.1"
 val jsoupVersion = "1.18.1"
-val kluentVersion = "1.72"
 val logbackVersion = "1.5.12"
 val logstashEncoderVersion = "8.0"
 val openHtmlToPdfVersion = "1.1.22"
@@ -18,7 +17,7 @@ val junitJupiterVersion = "5.11.3"
 val verapdfVersion = "1.26.1"
 val ktfmtVersion = "0.44"
 val kotlinloggerVersion = "7.0.0"
-val kotestVersion = "5.9.1"
+val commonsIoVersion = "2.17.0"
 val javaVersion = JvmTarget.JVM_21
 
 
@@ -68,6 +67,11 @@ dependencies {
     implementation("io.github.openhtmltopdf:openhtmltopdf-pdfbox:$openHtmlToPdfVersion")
     implementation("io.github.openhtmltopdf:openhtmltopdf-slf4j:$openHtmlToPdfVersion")
     implementation("io.github.openhtmltopdf:openhtmltopdf-svg-support:$openHtmlToPdfVersion")
+    constraints {
+        implementation("commons-io:commons-io:$commonsIoVersion") {
+            because("Due to vulnerabilities in io.github.openhtmltopdf:openhtmltopdf-svg-support")
+        }
+    }
 
     implementation("org.jsoup:jsoup:$jsoupVersion")
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
@@ -89,10 +93,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
-    testImplementation("io.kotest:kotest-property:$kotestVersion")
-
-
 }
 
 java {

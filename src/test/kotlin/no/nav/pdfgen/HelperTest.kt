@@ -8,9 +8,6 @@ import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.JsonNodeValueResolver
 import com.github.jknack.handlebars.context.MapValueResolver
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader
-import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldInclude
-import io.kotest.matchers.string.shouldNotInclude
 import no.nav.pdfgen.core.Environment
 import no.nav.pdfgen.core.PDFGenCore
 import no.nav.pdfgen.core.objectMapper
@@ -159,13 +156,13 @@ internal class HelperTest {
                          {{barn.navn}}
                     {{/filter}}
                 """
-                    .trimIndent()
+                    .trimIndent(),
             )
 
         val result = template.apply(jsonContext(jsonString.toJson()))
-        result shouldInclude "Barn1 Etternavn"
-        result shouldInclude "Barn2 Etternavn"
-        result shouldNotInclude "Mor Etternavn"
+        assertEquals(true, result.contains("Barn1 Etternavn"))
+        assertEquals(true, result.contains("Barn2 Etternavn"))
+        assertEquals(false, result.contains("Mor Etternavn"))
     }
 
     @Test
@@ -187,11 +184,12 @@ internal class HelperTest {
                 """
                    {{json_to_period periode}}
                 """
-                    .trimIndent()
+                    .trimIndent(),
             )
 
         val result = template.apply(jsonContext(jsonString.toJson()))
-        result shouldBe "20.03.2020 - 23.09.2021"
+
+        assertEquals(result, "20.03.2020 - 23.09.2021")
     }
 
     @Test
@@ -213,11 +211,11 @@ internal class HelperTest {
                 """
                    {{json_to_period periode}}
                 """
-                    .trimIndent()
+                    .trimIndent(),
             )
 
         val result = template.apply(jsonContext(jsonString.toJson()))
-        result shouldBe "20.03.2020 - 23.09.2021"
+        assertEquals(result, "20.03.2020 - 23.09.2021")
     }
 
     @Test
@@ -236,11 +234,11 @@ internal class HelperTest {
                 """
                    {{json_to_period periode}}
                 """
-                    .trimIndent()
+                    .trimIndent(),
             )
 
         val result = template.apply(jsonContext(jsonString.toJson()))
-        result shouldBe "09.08.2019 - 10.08.2019"
+        assertEquals(result, "09.08.2019 - 10.08.2019")
     }
 
     @Test
@@ -261,11 +259,11 @@ internal class HelperTest {
                 """
                    {{json_to_period periode}}
                 """
-                    .trimIndent()
+                    .trimIndent(),
             )
 
         val result = template.apply(jsonContext(jsonString.toJson()))
-        result shouldBe "20.03.2020 - "
+        assertEquals(result, "20.03.2020 - ")
     }
 
     @Test
@@ -399,9 +397,14 @@ internal class HelperTest {
                 },
             )
 
-        handlebars.compileInline("{{ iso_to_nor_date date }}").apply(context) shouldBe "03.03.2020"
-        handlebars.compileInline("{{ iso_to_nor_date dateWithoutDay }}").apply(context) shouldBe
-            "01.03.2020"
+        assertEquals(
+            handlebars.compileInline("{{ iso_to_nor_date date }}").apply(context),
+            "03.03.2020"
+        )
+        assertEquals(
+            handlebars.compileInline("{{ iso_to_nor_date dateWithoutDay }}").apply(context),
+            "01.03.2020",
+        )
     }
 
     @Test
@@ -414,9 +417,14 @@ internal class HelperTest {
                 },
             )
 
-        handlebars.compileInline("{{ iso_to_year_month date }}").apply(context) shouldBe "03.2020"
-        handlebars.compileInline("{{ iso_to_year_month dateWithDay }}").apply(context) shouldBe
+        assertEquals(
+            handlebars.compileInline("{{ iso_to_year_month date }}").apply(context),
             "03.2020"
+        )
+        assertEquals(
+            handlebars.compileInline("{{ iso_to_year_month dateWithDay }}").apply(context),
+            "03.2020",
+        )
     }
 
     @Test
@@ -1597,7 +1605,9 @@ internal class HelperTest {
                 },
             )
 
-        handlebars.compileInline("{{concat value1 value2 value3 }}").apply(context) shouldBe
+        assertEquals(
+            handlebars.compileInline("{{concat value1 value2 value3 }}").apply(context),
             "Value1 123123 value3"
+        )
     }
 }
