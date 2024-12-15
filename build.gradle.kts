@@ -83,7 +83,7 @@ dependencies {
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
 
-    implementation("org.verapdf:validation-model:$verapdfVersion")
+    implementation("org.verapdf:validation-model-jakarta:$verapdfVersion")
     implementation("io.github.oshai:kotlin-logging-jvm:$kotlinloggerVersion")
 
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
