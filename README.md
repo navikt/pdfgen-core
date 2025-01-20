@@ -18,7 +18,7 @@ Repository for `pdfgen-core`, an application written in Kotlin used to create PD
 pdfgen-core is used with templates, fonts, additional resources, and potential test data to verify that valid PDFs get produced by the templates.
 
 Check GitHub releases to find the latest `release` version 
-Check [Github releases](https://github.com/navikt/pdfgen-core/releases) to find the latest `release` version
+Check [GitHub releases](https://github.com/navikt/pdfgen-core/releases) to find the latest `release` version
 
 In your own repository create folders `templates`, `resources` and `data` on root of you repository
 * `templates`
@@ -163,6 +163,13 @@ Format json with parameters `fom`, `tom`/`til` as period string
 ```
 ## Developing pdfgen-core
 
+### Prerequisites
+Make sure you have the Java JDK 21 installed
+You can check which version you have installed using this command:
+``` bash script
+java -version
+```
+
 ### Build and run tests
 `./gradlew build`
 
@@ -177,10 +184,10 @@ You can then import `pdfgen-core` to your gradle project with
 `implementation("no.nav.pdfgen:pdfgen-core:local-build")`
 
 ### Release
-We use default github release, 
+We use default GitHub release, 
 This project uses [semantic versioning](https://semver.org/) and does NOT prefix tags or release titles with `v` i.e. use `1.2.3` instead of `v1.2.3` 
 
-see guide about how to relese:[creating release github](
+see guide about how to relese:[creating release GitHub](
 https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository#creating-a-release)
 
 ### Upgrading the gradle wrapper
