@@ -5,7 +5,7 @@ version = properties["version"]?.takeIf { it is String && it.isNotEmpty() && it 
 println(version)
 
 val handlebarsVersion = "4.3.1"
-val jacksonVersion = "2.18.2"
+val jacksonVersion = "2.18.3"
 val jaxbVersion = "4.0.5"
 val jaxbApiVersion = "2.3.1"
 val jsoupVersion = "1.18.3"
