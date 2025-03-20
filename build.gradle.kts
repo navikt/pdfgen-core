@@ -4,6 +4,8 @@ group = "no.nav.pdfgen"
 version = properties["version"]?.takeIf { it is String && it.isNotEmpty() && it != "unspecified" } ?: "local-build"
 println(version)
 
+val javaVersion = JvmTarget.JVM_21
+
 val handlebarsVersion = "4.3.1"
 val jacksonVersion = "2.18.3"
 val jaxbVersion = "4.0.5"
@@ -17,12 +19,13 @@ val junitJupiterVersion = "5.12.1"
 val verapdfVersion = "1.26.1"
 val ktfmtVersion = "0.44"
 val kotlinloggerVersion = "7.0.5"
+
+///Due to vulnerabilities
 val commonsIoVersion = "2.18.0"
-val javaVersion = JvmTarget.JVM_21
 
 
 plugins {
-    kotlin("jvm") version "2.1.10"
+    kotlin("jvm") version "2.1.20"
     id("com.diffplug.spotless") version "7.0.2"
     id("com.gradleup.shadow") version "8.3.6"
     id("com.github.ben-manes.versions") version "0.52.0"
@@ -125,7 +128,6 @@ publishing {
     repositories {
 
         maven {
-
             name = "pdfgen-core"
             description = "Bibliotek som inneholder kode for å generere PDF"
             url = uri("https://maven.pkg.github.com/navikt/pdfgen-core")
@@ -133,7 +135,6 @@ publishing {
                 username = System.getenv("GITHUB_USERNAME")
                 password = System.getenv("GITHUB_PASSWORD")
             }
-
         }
     }
 }
