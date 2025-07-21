@@ -21,7 +21,7 @@ val ktfmtVersion = "0.44"
 val kotlinloggerVersion = "7.0.7"
 
 ///Due to vulnerabilities
-val commonsIoVersion = "2.19.0"
+val commonsIoVersion = "2.20.0"
 
 
 plugins {
