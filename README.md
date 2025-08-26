@@ -211,7 +211,7 @@ If you need to contact anyone directly, please see contributors.
 To get started, please fork the repo and checkout a new branch. You can then build the library with the Gradle wrapper
 
 ```shell script
-./gradlew shadowJar
+./gradlew build
 ```
 
 See more info in [CONTRIBUTING.md](CONTRIBUTING.md)

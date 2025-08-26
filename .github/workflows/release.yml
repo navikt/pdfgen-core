@@ -26,7 +26,7 @@ jobs:
       - name: Build gradle artifacts
         shell: bash
         run: |
-          ./gradlew shadowJar
+          ./gradlew build
         env:
           GITHUB_USERNAME: x-access-token
           GITHUB_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
