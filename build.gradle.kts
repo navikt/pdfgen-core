@@ -8,7 +8,7 @@ val javaVersion = JvmTarget.JVM_21
 
 val handlebarsVersion = "4.3.1"
 val jacksonVersion = "2.20.0"
-val jaxbVersion = "4.0.5"
+val jaxbVersion = "4.0.6"
 val jaxbApiVersion = "2.3.1"
 val jsoupVersion = "1.21.2"
 val logbackVersion = "1.5.19"
