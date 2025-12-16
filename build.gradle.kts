@@ -89,7 +89,7 @@ dependencies {
     implementation("org.verapdf:validation-model-jakarta:$verapdfVersion")
     constraints {
         implementation("org.mozilla:rhino:$rhinoVersion") {
-            because("Due to vulnerabilities in io.github.openhtmltopdf:openhtmltopdf-svg-support")
+            because("Due to vulnerabilities in org.verapdf:validation-model-jakarta")
         }
     }
     implementation("io.github.oshai:kotlin-logging-jvm:$kotlinloggerVersion")
