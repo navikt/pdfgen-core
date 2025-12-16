@@ -11,7 +11,7 @@ Repository for `pdfgen-core`, an application written in Kotlin used to create PD
 * Junit
 * Handlebars
 * VeraPDF-validation
-* JDK 21
+* JDK 25
 
 ## Getting started
 
@@ -164,7 +164,7 @@ Format json with parameters `fom`, `tom`/`til` as period string
 ## Developing pdfgen-core
 
 ### Prerequisites
-Make sure you have the Java JDK 21 installed
+Make sure you have the Java JDK 25 installed
 You can check which version you have installed using this command:
 ``` bash script
 java -version

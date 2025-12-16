@@ -4,7 +4,7 @@ group = "no.nav.pdfgen"
 version = properties["version"]?.takeIf { it is String && it.isNotEmpty() && it != "unspecified" } ?: "local-build"
 println(version)
 
-val javaVersion = JvmTarget.JVM_21
+val javaVersion = JvmTarget.JVM_25
 
 val handlebarsVersion = "4.3.1"
 val jacksonVersion = "2.20.1"
@@ -22,10 +22,11 @@ val kotlinloggerVersion = "7.0.13"
 
 ///Due to vulnerabilities
 val commonsIoVersion = "2.21.0"
+val rhinoVersion = "1.7.14.1"
 
 
 plugins {
-    kotlin("jvm") version "2.2.21"
+    kotlin("jvm") version "2.3.0"
     id("com.diffplug.spotless") version "8.1.0"
     id("com.github.ben-manes.versions") version "0.53.0"
     id("maven-publish")
@@ -86,6 +87,11 @@ dependencies {
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
 
     implementation("org.verapdf:validation-model-jakarta:$verapdfVersion")
+    constraints {
+        implementation("org.mozilla:rhino:$rhinoVersion") {
+            because("Due to vulnerabilities in io.github.openhtmltopdf:openhtmltopdf-svg-support")
+        }
+    }
     implementation("io.github.oshai:kotlin-logging-jvm:$kotlinloggerVersion")
 
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
