@@ -18,7 +18,7 @@ val prometheusVersion = "0.16.0"
 val junitJupiterVersion = "6.0.1"
 val verapdfVersion = "1.28.2"
 val ktfmtVersion = "0.44"
-val kotlinloggerVersion = "7.0.13"
+val kotlinloggerVersion = "7.0.14"
 
 ///Due to vulnerabilities
 val commonsIoVersion = "2.21.0"
