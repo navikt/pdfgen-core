@@ -237,6 +237,11 @@ fun registerNavHelpers(
         )
 
         registerHelper(
+            "lowercase",
+            Helper<String> { context, _ -> context?.lowercase() ?: "" },
+        )
+
+        registerHelper(
             "inc",
             Helper<Int> { context, _ -> context + 1 },
         )
