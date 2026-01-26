@@ -1573,6 +1573,33 @@ internal class HelperTest {
     }
 
     @Test
+    internal fun `lowercase should lowercase all letters`() {
+        val context = jsonContext(jsonNodeFactory.objectNode())
+        assertEquals(
+            "brage bruker olsen",
+            handlebars.compileInline("{{lowercase \"BRAGE BRUKER OLSEN\"}}").apply(context),
+        )
+    }
+
+    @Test
+    internal fun `lowercase should lowercase all upper letters`() {
+        val context = jsonContext(jsonNodeFactory.objectNode())
+        assertEquals(
+            "brage bruker olsen",
+            handlebars.compileInline("{{lowercase \"Brage Bruker Olsen\"}}").apply(context),
+        )
+    }
+
+    @Test
+    internal fun `lowercase should lowercase strings with numbers`() {
+        val context = jsonContext(jsonNodeFactory.objectNode())
+        assertEquals(
+            "0553 oslo",
+            handlebars.compileInline("{{lowercase \"0553 Oslo\"}}").apply(context),
+        )
+    }
+
+    @Test
     internal fun `breaklines should replace  forward slash r n with newline`() {
         val context = jsonContext(jsonNodeFactory.objectNode())
         assertEquals(
