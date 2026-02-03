@@ -107,7 +107,7 @@ fun registerNavHelpers(
                 ChronoUnit.DAYS.between(
                     LocalDate.from(DateTimeFormatter.ISO_DATE.parse(context)),
                     LocalDate.from(DateTimeFormatter.ISO_DATE.parse(options.param(0))),
-                )
+                ).toInt()
             },
         )
 

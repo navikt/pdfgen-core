@@ -1637,4 +1637,16 @@ internal class HelperTest {
             "Value1 123123 value3"
         )
     }
+
+
+    @Test
+    internal fun `duration can be incremented with inc`() {
+        val context = jsonContext(jsonNodeFactory.objectNode())
+        assertEquals(
+            "1",
+            handlebars
+                .compileInline("{{inc (duration \"2023-01-01\" \"2023-01-01\")}}")
+                .apply(context),
+        )
+    }
 }
