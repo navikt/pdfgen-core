@@ -9,7 +9,7 @@ println(version)
 val javaVersion = JvmTarget.JVM_25
 
 val handlebarsVersion = "4.3.1"
-val jacksonVersion = "2.20.1"
+val jacksonVersion = "2.21.0"
 val jaxbVersion = "4.0.6"
 val jaxbApiVersion = "2.3.1"
 val jsoupVersion = "1.22.1"
