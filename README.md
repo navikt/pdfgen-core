@@ -7,7 +7,6 @@ Repository for `pdfgen-core`, an application written in Kotlin used to create PD
 ## Technologies & Tools
 * Kotlin
 * Gradle
-* Ktor
 * Junit
 * Handlebars
 * VeraPDF-validation
