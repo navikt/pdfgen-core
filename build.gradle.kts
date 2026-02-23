@@ -24,7 +24,7 @@ val kotlinloggerVersion = "7.0.14"
 
 ///Due to vulnerabilities
 val commonsIoVersion = "2.21.0"
-val rhinoVersion = "1.9.0"
+val rhinoVersion = "1.9.1"
 
 
 plugins {
