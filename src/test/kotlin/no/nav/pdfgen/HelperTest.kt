@@ -20,7 +20,7 @@ import org.junit.jupiter.api.assertThrows
 
 fun String.toJson(): JsonNode = objectMapper.readTree(this)
 
-internal class HelperTest {
+class HelperTest {
 
     val jsonNodeFactory = JsonNodeFactory.instance
     private val env = Environment()
