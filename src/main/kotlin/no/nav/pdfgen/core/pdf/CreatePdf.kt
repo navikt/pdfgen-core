@@ -71,7 +71,7 @@ fun createPDFA(html: String): ByteArray {
                         }
                     }
                     .usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_2_A)
-                    .usePdfUaAccessbility(true)
+                    .usePdfUaAccessibility(true)
                     .useColorProfile(PDFGenCore.environment.colorProfile)
                     .useSVGDrawer(BatikSVGDrawer())
                     .withHtmlContent(html, null)
