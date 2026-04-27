@@ -30,7 +30,7 @@ val rhinoVersion = "1.9.1"
 plugins {
     kotlin("jvm") version "2.3.20"
     id("com.diffplug.spotless") version "8.4.0"
-    id("com.github.ben-manes.versions") version "0.53.0"
+    id("com.github.ben-manes.versions") version "0.54.0"
     id("maven-publish")
     id("java-library")
 }
