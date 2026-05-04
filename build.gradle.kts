@@ -23,7 +23,7 @@ val ktfmtVersion = "0.44"
 val kotlinloggerVersion = "8.0.01"
 
 ///Due to vulnerabilities
-val commonsIoVersion = "2.21.0"
+val commonsIoVersion = "2.22.0"
 val rhinoVersion = "1.9.1"
 
 
