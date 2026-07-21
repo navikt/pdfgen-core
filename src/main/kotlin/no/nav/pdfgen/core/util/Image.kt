@@ -9,19 +9,31 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
 data class ImageSize(val width: Float, val height: Float)
 
 fun toPortait(image: BufferedImage): BufferedImage {
-    if (image.height >= image.width) {
-        return image
+    // TYPE_CUSTOM (0) er ikke støttet av AffineTransformOp — normaliser til ARGB
+    val normalized =
+        if (image.type == BufferedImage.TYPE_CUSTOM) {
+            BufferedImage(image.width, image.height, BufferedImage.TYPE_INT_ARGB).also {
+                val g = it.createGraphics()
+                g.drawImage(image, 0, 0, null)
+                g.dispose()
+            }
+        } else {
+            image
+        }
+
+    if (normalized.height >= normalized.width) {
+        return normalized
     }
 
     val rotateTransform =
         AffineTransform.getRotateInstance(
             Math.toRadians(90.0),
-            (image.height / 2f).toDouble(),
-            (image.height / 2f).toDouble(),
+            (normalized.height / 2f).toDouble(),
+            (normalized.height / 2f).toDouble(),
         )
 
     return AffineTransformOp(rotateTransform, AffineTransformOp.TYPE_BILINEAR)
-        .filter(image, BufferedImage(image.height, image.width, image.type))
+        .filter(normalized, BufferedImage(normalized.height, normalized.width, normalized.type))
 }
 
 fun scale(image: PDImageXObject, page: PDPage): ImageSize {
