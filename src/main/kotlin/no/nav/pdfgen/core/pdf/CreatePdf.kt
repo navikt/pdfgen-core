@@ -89,7 +89,7 @@ fun createPDFA(
     PDDocument().use { document ->
         val page = PDPage(PDRectangle.A4)
         document.addPage(page)
-        val image = toPortait(ImageIO.read(imageStream))
+        val image = toPortait(requireNotNull(ImageIO.read(imageStream)) { "Unsupported image format" })
 
         val quality = 1.0f
 
