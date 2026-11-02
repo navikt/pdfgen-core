@@ -298,7 +298,7 @@ fun registerNavHelpers(
                 val textValues = list.map { it.textValue() }
 
                 val params = options.params.toList()
-                val contains = if (params.isEmpty()) false else textValues.containsAll(params)
+                val contains = params.isNotEmpty() && textValues.containsAll(params)
 
                 if (contains) {
                     options.fn()
@@ -315,15 +315,7 @@ fun registerNavHelpers(
                 val withoutDecimals = options.param(0, false)
 
                 val splitNumber = context.toString().split(".")
-
-                // we're joining with a non-breaking space since currency values should not be split
-                // across several lines
-                val formattedNumber = splitNumber
-                    .first()
-                    .reversed()
-                    .chunked(3)
-                    .joinToString("\u00A0")
-                    .reversed()
+                val formattedNumber = splitNumber.first().groupThousands()
                 if (withoutDecimals) {
                     formattedNumber
                 } else {
@@ -340,36 +332,19 @@ fun registerNavHelpers(
         registerHelper(
             "int_as_currency_no",
             Helper<Int> { context, _ ->
-                val kr = context / 100
-                val øre = context % 100
-
-                // using .format(locale = Locale("nb")) should also do the trick, but it appears
-                // this no longer works
-                // so we just reuse the string-based code from above to get the format we want :)
-                val formattedKr = kr
-                    .toString()
-                    .reversed()
-                    .chunked(3)
-                    .joinToString("\u00A0")
-                    .reversed()
-                "$formattedKr,%02d".format(øre)
+                // Convert before taking the absolute value so Int.MIN_VALUE is representable.
+                context.toLong().formatOreAmount()
             },
         )
 
         registerHelper(
             "string_as_currency_no",
             Helper<String> { context, _ ->
-                val value = context.filter { c -> c.isDigit() }.toInt()
-                val kr = value / 100
-                val øre = value % 100
-
-                val formattedKr = kr
-                    .toString()
-                    .reversed()
-                    .chunked(3)
-                    .joinToString("\u00A0")
-                    .reversed()
-                "$formattedKr,%02d".format(øre)
+                val trimmed = context.trimStart()
+                val negative = trimmed.startsWith("-")
+                val digits = trimmed.filter { c -> c.isDigit() }
+                val value = (if (negative) "-$digits" else digits).toInt()
+                value.toLong().formatOreAmount()
             },
         )
 
@@ -444,6 +419,27 @@ private fun getParameterValue(
     return tempJsonNode.asText()
 }
 
-private fun String.capitalizeWords(wordSplitter: String) = this.split(wordSplitter).joinToString(wordSplitter) {
-    it.trim().replaceFirstChar { it.uppercase() }
+private fun String.groupThousands(): String {
+    val negative = startsWith("-")
+    val digits = if (negative) drop(1) else this
+    // Non-breaking spaces keep currency values from splitting across several lines.
+    val groupedDigits = digits
+        .reversed()
+        .chunked(3)
+        .joinToString("\u00A0")
+        .reversed()
+    return if (negative) "-$groupedDigits" else groupedDigits
+}
+
+private fun Long.formatOreAmount(): String {
+    val negative = this < 0
+    val absoluteValue = kotlin.math.abs(this)
+    val formattedKr = (absoluteValue / 100).toString().groupThousands()
+    val formattedOre = "%02d".format(absoluteValue % 100)
+    val sign = if (negative) "-" else ""
+    return "$sign$formattedKr,$formattedOre"
+}
+
+private fun String.capitalizeWords(wordSplitter: String) = this.split(wordSplitter).joinToString(wordSplitter) { word ->
+    word.trim().replaceFirstChar { character -> character.uppercase() }
 }
