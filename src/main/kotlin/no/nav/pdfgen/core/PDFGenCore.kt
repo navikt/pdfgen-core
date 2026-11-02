@@ -18,6 +18,7 @@ class PDFGenCore {
                     current ?: Environment().also { log.debug { "Creating default Environment" } }
                 }!!
 
+        @Suppress("unused")
         fun reloadEnvironment() {
             log.debug { "Reloading environment" }
             coreEnvironment.updateAndGet { currentEnv -> currentEnv?.copy() ?: Environment() }

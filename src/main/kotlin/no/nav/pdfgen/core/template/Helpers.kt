@@ -5,15 +5,15 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Helper
+import no.nav.pdfgen.core.PDFGenCore
+import no.nav.pdfgen.core.domain.Periode
+import no.nav.pdfgen.core.domain.PeriodeMapper
+import no.nav.pdfgen.core.objectMapper
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Locale
-import no.nav.pdfgen.core.PDFGenCore
-import no.nav.pdfgen.core.domain.Periode
-import no.nav.pdfgen.core.domain.PeriodeMapper
-import no.nav.pdfgen.core.objectMapper
 
 val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 val yearMonthFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("MM.yyyy")
@@ -23,26 +23,34 @@ val datetimeFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy 
 val datetimeSecondsFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
 val yearMonthFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM")
 
-fun formatDateTime(formatter: DateTimeFormatter, context: CharSequence): String =
-    try {
-        formatter.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parseBest(context))
-    } catch (e: Exception) {
-        formatter.format(DateTimeFormatter.ISO_DATE_TIME.parse(context))
-    }
+fun formatDateTime(
+    formatter: DateTimeFormatter,
+    context: CharSequence,
+): String = try {
+    formatter.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parseBest(context))
+} catch (_: Exception) {
+    formatter.format(DateTimeFormatter.ISO_DATE_TIME.parse(context))
+}
 
-fun formatDate(formatter: DateTimeFormatter, context: CharSequence): String {
+fun formatDate(
+    formatter: DateTimeFormatter,
+    context: CharSequence,
+): String {
     val dateSplit = context.split("-")
     return try {
-        if (dateSplit.size == 2) formatter.format(yearMonthFormatter.parse(context))
-        else formatter.format(DateTimeFormatter.ISO_DATE.parse(context))
-    } catch (e: Exception) {
+        if (dateSplit.size == 2) {
+            formatter.format(yearMonthFormatter.parse(context))
+        } else {
+            formatter.format(DateTimeFormatter.ISO_DATE.parse(context))
+        }
+    } catch (_: Exception) {
         formatter.format(DateTimeFormatter.ISO_DATE.parse("$context-01"))
     }
 }
 
 fun registerNavHelpers(
     handlebars: Handlebars,
-    additionalHelpers: Map<String, Helper<*>> = emptyMap()
+    additionalHelpers: Map<String, Helper<*>> = emptyMap(),
 ) {
     handlebars.apply {
         registerHelper(
@@ -51,7 +59,7 @@ fun registerNavHelpers(
                 if (context == null) return@Helper ""
                 try {
                     formatDateTime(dateFormat, context)
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     formatDate(dateFormat, context)
                 }
             },
@@ -95,7 +103,7 @@ fun registerNavHelpers(
                 if (context == null) return@Helper ""
                 try {
                     dateFormatLong.format(DateTimeFormatter.ISO_DATE_TIME.parse(context))
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     dateFormatLong.format(DateTimeFormatter.ISO_DATE.parse(context))
                 }
             },
@@ -104,10 +112,11 @@ fun registerNavHelpers(
         registerHelper(
             "duration",
             Helper<String> { context, options ->
-                ChronoUnit.DAYS.between(
-                    LocalDate.from(DateTimeFormatter.ISO_DATE.parse(context)),
-                    LocalDate.from(DateTimeFormatter.ISO_DATE.parse(options.param(0))),
-                ).toInt()
+                ChronoUnit.DAYS
+                    .between(
+                        LocalDate.from(DateTimeFormatter.ISO_DATE.parse(context)),
+                        LocalDate.from(DateTimeFormatter.ISO_DATE.parse(options.param(0))),
+                    ).toInt()
             },
         )
 
@@ -127,8 +136,10 @@ fun registerNavHelpers(
                         if (periode.fom == null) return@Helper ""
                         return@Helper periode.fom.format(dateFormat) +
                             " - " +
-                            (periode.tom?.format(dateFormat)
-                                ?: periode.til?.format(dateFormat) ?: "")
+                            (
+                                periode.tom?.format(dateFormat)
+                                    ?: periode.til?.format(dateFormat) ?: ""
+                            )
                     }
                 }
             },
@@ -307,14 +318,20 @@ fun registerNavHelpers(
 
                 // we're joining with a non-breaking space since currency values should not be split
                 // across several lines
-                val formattedNumber =
-                    splitNumber.first().reversed().chunked(3).joinToString("\u00A0").reversed()
+                val formattedNumber = splitNumber
+                    .first()
+                    .reversed()
+                    .chunked(3)
+                    .joinToString("\u00A0")
+                    .reversed()
                 if (withoutDecimals) {
                     formattedNumber
                 } else {
-                    val decimals =
-                        splitNumber.drop(1).firstOrNull()?.let { (it + "0").substring(0, 2) }
-                            ?: "00"
+                    val decimals = splitNumber
+                        .drop(1)
+                        .firstOrNull()
+                        ?.let { (it + "0").substring(0, 2) }
+                        ?: "00"
                     "$formattedNumber,$decimals"
                 }
             },
@@ -329,8 +346,12 @@ fun registerNavHelpers(
                 // using .format(locale = Locale("nb")) should also do the trick, but it appears
                 // this no longer works
                 // so we just reuse the string-based code from above to get the format we want :)
-                val formattedKr =
-                    kr.toString().reversed().chunked(3).joinToString("\u00A0").reversed()
+                val formattedKr = kr
+                    .toString()
+                    .reversed()
+                    .chunked(3)
+                    .joinToString("\u00A0")
+                    .reversed()
                 "$formattedKr,%02d".format(øre)
             },
         )
@@ -342,8 +363,12 @@ fun registerNavHelpers(
                 val kr = value / 100
                 val øre = value % 100
 
-                val formattedKr =
-                    kr.toString().reversed().chunked(3).joinToString("\u00A0").reversed()
+                val formattedKr = kr
+                    .toString()
+                    .reversed()
+                    .chunked(3)
+                    .joinToString("\u00A0")
+                    .reversed()
                 "$formattedKr,%02d".format(øre)
             },
         )
@@ -409,14 +434,16 @@ fun registerNavHelpers(
     }
 }
 
-private fun getParameterValue(jsonNode: JsonNode, parameterPathString: String?): String {
+private fun getParameterValue(
+    jsonNode: JsonNode,
+    parameterPathString: String?,
+): String {
     val parameterPath = parameterPathString?.split(".") ?: emptyList()
     var tempJsonNode = jsonNode
     parameterPath.forEach { parameter -> tempJsonNode = tempJsonNode.get(parameter) }
     return tempJsonNode.asText()
 }
 
-private fun String.capitalizeWords(wordSplitter: String) =
-    this.split(wordSplitter).joinToString(wordSplitter) {
-        it.trim().replaceFirstChar { it.uppercase() }
-    }
+private fun String.capitalizeWords(wordSplitter: String) = this.split(wordSplitter).joinToString(wordSplitter) {
+    it.trim().replaceFirstChar { it.uppercase() }
+}
