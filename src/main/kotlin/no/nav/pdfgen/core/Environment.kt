@@ -28,8 +28,11 @@ class Environment(
     val fontsRoot: PDFGenResource = PDFGenResource("fonts/"),
     val dataRoot: PDFGenResource = PDFGenResource("data/"),
 ) {
+    // Reloading opens a new resource stream; close it after reading the profile.
     val colorProfile: ByteArray =
-        IOUtils.toByteArray(Environment::class.java.getResourceAsStream("/sRGB2014.icc"))
+        Environment::class.java.getResourceAsStream("/sRGB2014.icc")?.use {
+            IOUtils.toByteArray(it)
+        } ?: throw RuntimeException("Could not find ICC color profile")
     val images: Map<String, String> = loadImages(resourcesRoot)
     val resources: Map<String, ByteArray> = loadResources(resourcesRoot)
     val fonts: List<FontMetadata> = objectMapper.readValue(fontsRoot.readAllBytes("config.json"))
@@ -65,11 +68,13 @@ data class PDFGenResource(
         return if (filePath.exists()) {
             filePath.readBytes()
         } else {
+            // Classpath streams need explicit closing, unlike the disk-path readBytes helper.
             Environment::class
                 .java
                 .classLoader
-                .getResourceAsStream(filePath.pathString)!!
-                .readAllBytes()
+                .getResourceAsStream(filePath.pathString)
+                ?.use { it.readAllBytes() }
+                ?: throw RuntimeException("Could not find file at path $filePath")
         }
     }
 
@@ -89,30 +94,34 @@ data class PDFGenResource(
     }
 }
 
-private fun loadImages(imagesRoot: PDFGenResource) = Files
-    .list(imagesRoot.getPath())
-    .filter {
-        val validExtensions = setOf("jpg", "jpeg", "png", "bmp", "svg")
-        !Files.isHidden(it) && it.fileName.extension in validExtensions
-    }.map {
-        val fileName = it.fileName.toString()
-        val extension =
-            when (it.fileName.extension) {
-                "jpg" -> "jpeg" // jpg is not a valid mime-type
-                "svg" -> "svg+xml"
-                else -> it.fileName.extension
-            }
-        val base64string = Base64.getEncoder().encodeToString(Files.readAllBytes(it))
-        val base64 = "data:image/$extension;base64,$base64string"
-        fileName to base64
-    }.toList()
-    .toMap()
+// Terminal operations such as toList do not close Files.list; use prevents leaks on reload.
+private fun loadImages(imagesRoot: PDFGenResource) = Files.list(imagesRoot.getPath()).use { files ->
+    files
+        .filter {
+            val validExtensions = setOf("jpg", "jpeg", "png", "bmp", "svg")
+            !Files.isHidden(it) && it.fileName.extension in validExtensions
+        }.map {
+            val fileName = it.fileName.toString()
+            val extension =
+                when (it.fileName.extension) {
+                    "jpg" -> "jpeg" // jpg is not a valid mime-type
+                    "svg" -> "svg+xml"
+                    else -> it.fileName.extension
+                }
+            val base64string = Base64.getEncoder().encodeToString(Files.readAllBytes(it))
+            val base64 = "data:image/$extension;base64,$base64string"
+            fileName to base64
+        }.toList()
+        .toMap()
+}
 
-private fun loadResources(imagesRoot: PDFGenResource) = Files
-    .list(imagesRoot.getPath())
-    .filter {
-        val validExtensions = setOf("svg")
-        !Files.isHidden(it) && it.fileName.extension in validExtensions
-    }.map { it.fileName.toString() to Files.readAllBytes(it) }
-    .toList()
-    .toMap()
+private fun loadResources(imagesRoot: PDFGenResource) = Files.list(imagesRoot.getPath()).use { files ->
+    // Read and collect the resources before use closes the directory stream.
+    files
+        .filter {
+            val validExtensions = setOf("svg")
+            !Files.isHidden(it) && it.fileName.extension in validExtensions
+        }.map { it.fileName.toString() to Files.readAllBytes(it) }
+        .toList()
+        .toMap()
+}
