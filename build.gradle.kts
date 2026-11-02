@@ -25,7 +25,7 @@ val commonsIoVersion = "2.22.0"
 val rhinoVersion = "1.9.1"
 
 plugins {
-    kotlin("jvm") version "2.3.21"
+    kotlin("jvm") version "2.4.21"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     id("com.github.ben-manes.versions") version "0.54.0"
     id("maven-publish")
