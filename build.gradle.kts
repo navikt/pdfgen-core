@@ -13,7 +13,7 @@ val jacksonVersion = "2.21.4"
 val jackson3Version = "3.2.4"
 val jaxbVersion = "4.0.9"
 val jaxbApiVersion = "2.3.1"
-val jsoupVersion = "1.22.2"
+val jsoupVersion = "1.23.2"
 val logbackVersion = "1.5.32"
 val logstashEncoderVersion = "9.0"
 val openHtmlToPdfVersion = "1.1.37"
@@ -29,7 +29,7 @@ val rhinoVersion = "1.9.1"
 plugins {
     kotlin("jvm") version "2.4.21"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
-    id("com.github.ben-manes.versions") version "0.54.0"
+    id("com.github.ben-manes.versions") version "0.66.0"
     id("maven-publish")
     id("java-library")
 }
