@@ -7,8 +7,10 @@ println(version)
 
 val javaVersion = JvmTarget.JVM_25
 
-val handlebarsVersion = "4.3.1"
+val handlebarsVersion = "4.5.8"
+val handlebarsJackson2Version = "4.3.1"
 val jacksonVersion = "2.21.4"
+val jackson3Version = "3.2.4"
 val jaxbVersion = "4.0.9"
 val jaxbApiVersion = "2.3.1"
 val jsoupVersion = "1.22.2"
@@ -17,7 +19,7 @@ val logstashEncoderVersion = "9.0"
 val openHtmlToPdfVersion = "1.1.37"
 val prometheusVersion = "0.16.0"
 val junitJupiterVersion = "6.1.0"
-val verapdfVersion = "1.30.1"
+val verapdfVersion = "1.30.3"
 val kotlinloggerVersion = "8.0.4"
 
 // /Due to vulnerabilities
@@ -73,7 +75,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
 
     implementation("com.github.jknack:handlebars:$handlebarsVersion")
-    implementation("com.github.jknack:handlebars-jackson2:$handlebarsVersion")
+    implementation("com.github.jknack:handlebars-jackson2:$handlebarsJackson2Version")
     implementation("io.github.openhtmltopdf:openhtmltopdf-pdfbox:$openHtmlToPdfVersion")
     implementation("io.github.openhtmltopdf:openhtmltopdf-slf4j:$openHtmlToPdfVersion")
     implementation("io.github.openhtmltopdf:openhtmltopdf-svg-support:$openHtmlToPdfVersion")
@@ -87,6 +89,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+    implementation(platform("tools.jackson:jackson-bom:$jackson3Version"))
     implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
     implementation("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
 
