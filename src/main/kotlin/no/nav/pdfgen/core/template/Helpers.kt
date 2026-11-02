@@ -318,19 +318,20 @@ fun registerNavHelpers(
 
                 // we're joining with a non-breaking space since currency values should not be split
                 // across several lines
-                val formattedNumber =
-                    splitNumber
-                        .first()
-                        .reversed()
-                        .chunked(3)
-                        .joinToString("\u00A0")
-                        .reversed()
+                val formattedNumber = splitNumber
+                    .first()
+                    .reversed()
+                    .chunked(3)
+                    .joinToString("\u00A0")
+                    .reversed()
                 if (withoutDecimals) {
                     formattedNumber
                 } else {
-                    val decimals =
-                        splitNumber.drop(1).firstOrNull()?.let { (it + "0").substring(0, 2) }
-                            ?: "00"
+                    val decimals = splitNumber
+                        .drop(1)
+                        .firstOrNull()
+                        ?.let { (it + "0").substring(0, 2) }
+                        ?: "00"
                     "$formattedNumber,$decimals"
                 }
             },
@@ -345,13 +346,12 @@ fun registerNavHelpers(
                 // using .format(locale = Locale("nb")) should also do the trick, but it appears
                 // this no longer works
                 // so we just reuse the string-based code from above to get the format we want :)
-                val formattedKr =
-                    kr
-                        .toString()
-                        .reversed()
-                        .chunked(3)
-                        .joinToString("\u00A0")
-                        .reversed()
+                val formattedKr = kr
+                    .toString()
+                    .reversed()
+                    .chunked(3)
+                    .joinToString("\u00A0")
+                    .reversed()
                 "$formattedKr,%02d".format(øre)
             },
         )
@@ -363,13 +363,12 @@ fun registerNavHelpers(
                 val kr = value / 100
                 val øre = value % 100
 
-                val formattedKr =
-                    kr
-                        .toString()
-                        .reversed()
-                        .chunked(3)
-                        .joinToString("\u00A0")
-                        .reversed()
+                val formattedKr = kr
+                    .toString()
+                    .reversed()
+                    .chunked(3)
+                    .joinToString("\u00A0")
+                    .reversed()
                 "$formattedKr,%02d".format(øre)
             },
         )

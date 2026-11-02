@@ -46,7 +46,7 @@ class Environment(
 
     override fun hashCode(): Int = colorProfile.contentHashCode()
 
-    fun copy(): Environment = Environment(
+    fun copy() = Environment(
         additionalHandlebarHelpers = additionalHandlebarHelpers,
         templateRoot = templateRoot,
         resourcesRoot = resourcesRoot,

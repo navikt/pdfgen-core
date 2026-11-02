@@ -56,13 +56,12 @@ fun createPDFA(html: String): ByteArray {
             PdfRendererBuilder()
                 .apply {
                     for ((family, path, weight, style, subset) in PDFGenCore.environment.fonts) {
-                        val ttf =
-                            TTFParser()
-                                .parse(
-                                    RandomAccessReadBufferedFile(
-                                        "${PDFGenCore.environment.fontsRoot.path}/$path",
-                                    ),
-                                ).also { it.isEnableGsub = false }
+                        val ttf = TTFParser()
+                            .parse(
+                                RandomAccessReadBufferedFile(
+                                    "${PDFGenCore.environment.fontsRoot.path}/$path",
+                                ),
+                            ).also { it.isEnableGsub = false }
                         useFont(
                             PDFontSupplier(PDType0Font.load(PDDocument(), ttf, subset)),
                             family,
