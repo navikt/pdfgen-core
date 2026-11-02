@@ -8,14 +8,7 @@ updates:
       default-days: 7
     commit-message:
       prefix: "fix: "
-  - package-ecosystem: "docker"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    cooldown:
-      default-days: 7
-    commit-message:
-      prefix: "fix: "
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
