@@ -362,13 +362,12 @@ fun registerNavHelpers(
                     ""
                 } else {
                     val santizedText = Handlebars.Utils.escapeExpression(context)
-                    val withLineBreak =
-                        santizedText
-                            .toString()
-                            .replace("\\r\\n", "<br/>")
-                            .replace("\\n", "<br/>")
-                            .replace("\r\n", "<br/>")
-                            .replace("\n", "<br/>")
+                    val withLineBreak = santizedText
+                        .toString()
+                        .replace("\\r\\n", "<br/>")
+                        .replace("\\n", "<br/>")
+                        .replace("\r\n", "<br/>")
+                        .replace("\n", "<br/>")
                     Handlebars.SafeString(withLineBreak)
                 }
             },
@@ -381,8 +380,10 @@ fun registerNavHelpers(
                 val filterByValue = options.param(1, null as String?)
                 val buffer = options.buffer()
                 if (list is JsonNode) {
-                    val filteredList =
-                        list.filter { getParameterValue(it, filterByField) == filterByValue }
+                    val filteredList = list.filter {
+                        val value = getParameterValue(it, filterByField)
+                        value != null && value == filterByValue
+                    }
                     filteredList.forEachIndexed { _, it -> buffer.append(options.fn(it)) }
                 }
 
@@ -412,10 +413,10 @@ fun registerNavHelpers(
 private fun getParameterValue(
     jsonNode: JsonNode,
     parameterPathString: String?,
-): String {
+): String? {
     val parameterPath = parameterPathString?.split(".") ?: emptyList()
     var tempJsonNode = jsonNode
-    parameterPath.forEach { parameter -> tempJsonNode = tempJsonNode.get(parameter) }
+    parameterPath.forEach { parameter -> tempJsonNode = tempJsonNode.get(parameter) ?: return null }
     return tempJsonNode.asText()
 }
 

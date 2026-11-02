@@ -159,6 +159,128 @@ class HelperTest {
     }
 
     @Test
+    internal fun `Should filter list in order and skip missing field`() {
+        val template = handlebars.compileInline(
+            """{{#filter rows "type" "KEEP" as |row|}}{{row.name}}|{{/filter}}""",
+        )
+        val context = jsonContext(
+            """
+            {
+              "rows": [
+                {"type": "KEEP", "name": "first"},
+                {"type": "SKIP", "name": "not-a-match"},
+                {"name": "missing"},
+                {"type": "KEEP", "name": "last"}
+              ]
+            }
+            """.toJson(),
+        )
+
+        assertEquals("first|last|", template.apply(context))
+    }
+
+    @Test
+    internal fun `Should filter nested field and skip missing or non-object path segments`() {
+        val template = handlebars.compileInline(
+            """{{#filter rows "meta.type" "KEEP" as |row|}}{{row.name}}|{{/filter}}""",
+        )
+        val context = jsonContext(
+            """
+            {
+              "rows": [
+                {"meta": {"type": "KEEP"}, "name": "first"},
+                {"meta": {"type": "SKIP"}, "name": "not-a-match"},
+                {"name": "missing-parent"},
+                {"meta": {}, "name": "empty-parent"},
+                {"meta": null, "name": "null-parent"},
+                {"meta": "scalar", "name": "scalar-parent"},
+                {"meta": {"other": "value"}, "name": "missing-leaf"},
+                {"meta": {"type": "KEEP"}, "name": "last"}
+              ]
+            }
+            """.toJson(),
+        )
+
+        assertEquals("first|last|", template.apply(context))
+    }
+
+    @Test
+    internal fun `Should filter empty string without matching missing or JSON null fields`() {
+        val template = handlebars.compileInline(
+            """{{#filter rows "value" "" as |row|}}{{row.name}}|{{/filter}}""",
+        )
+        val context = jsonContext(
+            """
+            {
+              "rows": [
+                {"value": "", "name": "empty"},
+                {"name": "missing"},
+                {"value": null, "name": "json-null"},
+                {"value": "text", "name": "text"}
+              ]
+            }
+            """.toJson(),
+        )
+
+        assertEquals("empty|", template.apply(context))
+    }
+
+    @Test
+    internal fun `Should filter literal null without matching missing fields`() {
+        val template = handlebars.compileInline(
+            """{{#filter rows "value" "null" as |row|}}{{row.name}}|{{/filter}}""",
+        )
+        val context = jsonContext(
+            """
+            {
+              "rows": [
+                {"value": null, "name": "json-null"},
+                {"name": "missing"},
+                {"value": "null", "name": "text-null"}
+              ]
+            }
+            """.toJson(),
+        )
+
+        assertEquals("json-null|text-null|", template.apply(context))
+
+        val nestedTemplate = handlebars.compileInline(
+            """{{#filter rows "meta.value" "null" as |row|}}{{row.name}}|{{/filter}}""",
+        )
+        val nestedContext = jsonContext(
+            """
+            {
+              "rows": [
+                {"meta": {"value": null}, "name": "nested-json-null"},
+                {"name": "missing-parent"},
+                {"meta": {}, "name": "missing-leaf"}
+              ]
+            }
+            """.toJson(),
+        )
+
+        assertEquals("nested-json-null|", nestedTemplate.apply(nestedContext))
+    }
+
+    @Test
+    internal fun `Should filter no rows when filter value is omitted`() {
+        val template = handlebars.compileInline(
+            """{{#filter rows "value" as |row|}}{{row.name}}|{{/filter}}""",
+        )
+        val context = jsonContext(
+            """
+            {
+              "rows": [
+                {"name": "missing"}
+              ]
+            }
+            """.toJson(),
+        )
+
+        assertEquals("", template.apply(context))
+    }
+
+    @Test
     internal fun `json_to_period should convert to date with fom and tom`() {
         @Language("Json")
         val jsonString =
