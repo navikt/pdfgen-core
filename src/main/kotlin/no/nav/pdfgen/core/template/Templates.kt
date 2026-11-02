@@ -11,26 +11,34 @@ import kotlin.io.path.extension
 
 typealias TemplateMap = Map<Pair<String, String>, Template>
 
+// Close both directory levels, including when reading or compiling a template fails.
 fun loadTemplates(
     templateRoot: PDFGenResource,
     additionalHandlebarHelpers: Map<String, Helper<*>>,
 ): TemplateMap = Files
     .list(templateRoot.getPath())
-    .filter { !Files.isHidden(it) && Files.isDirectory(it) }
-    .map {
-        it.fileName.toString() to Files.list(it).filter { b -> b.fileName.extension == "hbs" }
-    }.flatMap { (applicationName, templateFiles) ->
-        templateFiles.map {
-            val fileName = it.fileName.toString()
-            val templateName = fileName.substring(0..fileName.length - 5)
-            val templateBytes = Files.readAllBytes(it).toString(Charsets.UTF_8)
-            val xhtml =
-                setupHandlebars(templateRoot, additionalHandlebarHelpers)
-                    .compile(StringTemplateSource(fileName, templateBytes))
-            (applicationName to templateName) to xhtml
-        }
-    }.toList()
-    .toMap()
+    .use { directories ->
+        directories
+            .filter { !Files.isHidden(it) && Files.isDirectory(it) }
+            .toList()
+            .flatMap { applicationDir ->
+                val applicationName = applicationDir.fileName.toString()
+                Files.list(applicationDir).use { templateFiles ->
+                    // Collect the compiled templates here so no lazy stream escapes this use block.
+                    templateFiles
+                        .filter { it.fileName.extension == "hbs" }
+                        .map {
+                            val fileName = it.fileName.toString()
+                            val templateName = fileName.substring(0..fileName.length - 5)
+                            val templateBytes = Files.readAllBytes(it).toString(Charsets.UTF_8)
+                            val xhtml =
+                                setupHandlebars(templateRoot, additionalHandlebarHelpers)
+                                    .compile(StringTemplateSource(fileName, templateBytes))
+                            (applicationName to templateName) to xhtml
+                        }.toList()
+                }
+            }.toMap()
+    }
 
 private fun setupHandlebars(
     templateRoot: PDFGenResource,
