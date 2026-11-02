@@ -1,4 +1,3 @@
-import com.diffplug.gradle.spotless.SpotlessTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 
@@ -19,17 +18,15 @@ val openHtmlToPdfVersion = "1.1.37"
 val prometheusVersion = "0.16.0"
 val junitJupiterVersion = "6.0.3"
 val verapdfVersion = "1.30.1"
-val ktfmtVersion = "0.44"
 val kotlinloggerVersion = "8.0.4"
 
-///Due to vulnerabilities
+// /Due to vulnerabilities
 val commonsIoVersion = "2.22.0"
 val rhinoVersion = "1.9.1"
 
-
 plugins {
-    kotlin("jvm") version "2.3.21"
-    id("com.diffplug.spotless") version "8.5.1"
+    kotlin("jvm") version "2.4.21"
+    id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     id("com.github.ben-manes.versions") version "0.54.0"
     id("maven-publish")
     id("java-library")
@@ -42,8 +39,8 @@ kotlin {
 }
 
 tasks {
-    withType<Test> {
-        useJUnitPlatform {}
+    named<Test>("test") {
+        useJUnitPlatform()
         testLogging {
             events("passed", "skipped", "failed")
             showStandardStreams = true
@@ -52,21 +49,13 @@ tasks {
         }
     }
 
-   withType<Exec> {
-        println("⚈ ⚈ ⚈ Running Add Pre Commit Git Hook Script on Build ⚈ ⚈ ⚈")
-        commandLine("cp", "./.scripts/pre-commit", "./.git/hooks")
-        println("✅ Added Pre Commit Git Hook Script.")
-
+    named("check") {
+        dependsOn("ktlintCheck")
     }
+}
 
-    withType<SpotlessTask> {
-        spotless{
-            kotlin { ktfmt(ktfmtVersion).kotlinlangStyle() }
-            check {
-                dependsOn("spotlessApply")
-            }
-        }
-    }
+ktlint {
+    version.set("1.8.0")
 }
 
 repositories {
@@ -75,6 +64,12 @@ repositories {
 }
 
 dependencies {
+    constraints {
+        implementation("org.mozilla:rhino:$rhinoVersion") {
+            because("Due to vulnerabilities in org.verapdf:validation-model-jakarta")
+        }
+    }
+
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
 
     implementation("com.github.jknack:handlebars:$handlebarsVersion")
@@ -99,11 +94,6 @@ dependencies {
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
 
     implementation("org.verapdf:validation-model-jakarta:$verapdfVersion")
-    constraints {
-        implementation("org.mozilla:rhino:$rhinoVersion") {
-            because("Due to vulnerabilities in org.verapdf:validation-model-jakarta")
-        }
-    }
     implementation("io.github.oshai:kotlin-logging-jvm:$kotlinloggerVersion")
 
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
@@ -143,7 +133,6 @@ publishing {
     }
 
     repositories {
-
         maven {
             name = "pdfgen-core"
             description = "Bibliotek som inneholder kode for å generere PDF"

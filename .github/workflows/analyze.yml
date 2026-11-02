@@ -20,16 +20,16 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v4.35.5
+      uses: github/codeql-action/init@v4.39.1
       with:
         languages: kotlin
         build-mode: manual
 
     - name: Set up Java 25
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@v6
       with:
         distribution: 'temurin'
         java-version: '25'
@@ -40,6 +40,6 @@ jobs:
         ./gradlew build
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v4.35.5
+      uses: github/codeql-action/analyze@v4.39.1
       with:
         category: "/language:kotlin"

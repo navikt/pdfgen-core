@@ -10,6 +10,7 @@ data class FontMetadata(
     val style: BaseRendererBuilder.FontStyle,
     val subset: Boolean,
 ) {
+    @Suppress("unused")
     val bytes: ByteArray
         get() = PDFGenCore.environment.fontsRoot.readAllBytes(path)
 }
