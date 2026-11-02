@@ -5,12 +5,6 @@ import com.openhtmltopdf.pdfboxout.PDFontSupplier
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
 import com.openhtmltopdf.svgsupport.BatikSVGDrawer
 import io.github.oshai.kotlinlogging.KotlinLogging
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
-import java.io.OutputStream
-import java.util.Calendar
-import javax.imageio.ImageIO
 import no.nav.pdfgen.core.PDFGenCore
 import no.nav.pdfgen.core.util.scale
 import no.nav.pdfgen.core.util.toPortait
@@ -35,55 +29,63 @@ import org.apache.xmpbox.xml.XmpSerializer
 import org.verapdf.pdfa.Foundries
 import org.verapdf.pdfa.flavours.PDFAFlavour
 import org.verapdf.pdfa.results.TestAssertion
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
+import java.io.OutputStream
+import java.util.Calendar
+import javax.imageio.ImageIO
 
 private val log = KotlinLogging.logger {}
 
-fun createPDFA(template: String, directoryName: String, jsonPayload: JsonNode? = null): ByteArray? {
-    val html =
-        jsonPayload?.let { createHtml(template, directoryName, it) }
-            ?: createHtmlFromTemplateData(template, directoryName)
+@Suppress("unused")
+fun createPDFA(
+    template: String,
+    directoryName: String,
+    jsonPayload: JsonNode? = null,
+): ByteArray? {
+    val html = jsonPayload?.let { createHtml(template, directoryName, it) }
+        ?: createHtmlFromTemplateData(template, directoryName)
+
     return html?.let { createPDFA(it) }
 }
 
 fun createPDFA(html: String): ByteArray {
-
-    val pdf =
-        ByteArrayOutputStream()
-            .apply {
-                PdfRendererBuilder()
-                    .apply {
-                        for (font in PDFGenCore.environment.fonts) {
-                            val ttf =
-                                TTFParser()
-                                    .parse(
-                                        RandomAccessReadBufferedFile(
-                                            "${PDFGenCore.environment.fontsRoot.path}/${font.path}"
-                                        )
-                                    )
-                                    .also { it.isEnableGsub = false }
-                            useFont(
-                                PDFontSupplier(PDType0Font.load(PDDocument(), ttf, font.subset)),
-                                font.family,
-                                font.weight,
-                                font.style,
-                                font.subset
-                            )
-                        }
+    val pdf = ByteArrayOutputStream()
+        .apply {
+            PdfRendererBuilder()
+                .apply {
+                    for ((family, path, weight, style, subset) in PDFGenCore.environment.fonts) {
+                        val ttf = TTFParser()
+                            .parse(
+                                RandomAccessReadBufferedFile(
+                                    "${PDFGenCore.environment.fontsRoot.path}/$path",
+                                ),
+                            ).also { it.isEnableGsub = false }
+                        useFont(
+                            PDFontSupplier(PDType0Font.load(PDDocument(), ttf, subset)),
+                            family,
+                            weight,
+                            style,
+                            subset,
+                        )
                     }
-                    .usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_2_A)
-                    .usePdfUaAccessibility(true)
-                    .useColorProfile(PDFGenCore.environment.colorProfile)
-                    .useSVGDrawer(BatikSVGDrawer())
-                    .withHtmlContent(html, null)
-                    .toStream(this)
-                    .run()
-            }
-            .toByteArray()
+                }.usePdfAConformance(PdfRendererBuilder.PdfAConformance.PDFA_2_A)
+                .usePdfUaAccessibility(true)
+                .useColorProfile(PDFGenCore.environment.colorProfile)
+                .useSVGDrawer(BatikSVGDrawer())
+                .withHtmlContent(html, null)
+                .toStream(this)
+                .run()
+        }.toByteArray()
     require(verifyCompliance(pdf)) { "Non-compliant PDF/A :(" }
     return pdf
 }
 
-fun createPDFA(imageStream: InputStream, outputStream: OutputStream) {
+fun createPDFA(
+    imageStream: InputStream,
+    outputStream: OutputStream,
+) {
     PDDocument().use { document ->
         val page = PDPage(PDRectangle.A4)
         document.addPage(page)
@@ -94,7 +96,7 @@ fun createPDFA(imageStream: InputStream, outputStream: OutputStream) {
         val pdImage =
             try {
                 JPEGFactory.createFromImage(document, image, quality)
-            } catch (e: javax.imageio.IIOException) {
+            } catch (_: javax.imageio.IIOException) {
                 // To avoid "javax.imageio.IIOException: Illegal band size: should be 0 < size <= 8"
                 // for certain black/white pictures
                 LosslessFactory.createFromImage(document, image)
