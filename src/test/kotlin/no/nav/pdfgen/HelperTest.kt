@@ -1134,6 +1134,7 @@ class HelperTest {
     internal fun `lt - less than should fail if argument are not of same type`() {
         val context = jsonContext(
             jsonNodeFactory.objectNode().apply {
+                put("int_string", "1337")
                 put("small_int", -1)
                 put("large_int", 1337)
                 put("small_double", -1.67)
@@ -1145,17 +1146,17 @@ class HelperTest {
 
         assertThrows<Exception> {
             handlebars
-                .compileInline("{{#gt int_string large_int }}TRUE{{else}}FALSE{{/gt}}")
+                .compileInline("{{#lt int_string large_int }}TRUE{{else}}FALSE{{/lt}}")
                 .apply(context)
         }
         assertThrows<Exception> {
             handlebars
-                .compileInline("{{#gt small_double a_string }}TRUE{{else}}FALSE{{/gt}}")
+                .compileInline("{{#lt small_double a_string }}TRUE{{else}}FALSE{{/lt}}")
                 .apply(context)
         }
         assertThrows<Exception> {
             handlebars
-                .compileInline("{{#gt small_double small_int }}TRUE{{else}}FALSE{{/gt}}")
+                .compileInline("{{#lt small_double small_int }}TRUE{{else}}FALSE{{/lt}}")
                 .apply(context)
         }
     }
@@ -1175,16 +1176,16 @@ class HelperTest {
 
         assertThrows<Exception> {
             handlebars
-                .compileInline("{{#gt int_string noexists }}TRUE{{else}}FALSE{{/gt}}")
+                .compileInline("{{#lt int_string noexists }}TRUE{{else}}FALSE{{/lt}}")
                 .apply(context)
         }
         assertThrows<Exception> {
             handlebars
-                .compileInline("{{#gt small_double null }}TRUE{{else}}FALSE{{/gt}}")
+                .compileInline("{{#lt small_double null }}TRUE{{else}}FALSE{{/lt}}")
                 .apply(context)
         }
         assertThrows<Exception> {
-            handlebars.compileInline("{{#gt small_double }}TRUE{{else}}FALSE{{/gt}}").apply(context)
+            handlebars.compileInline("{{#lt small_double }}TRUE{{else}}FALSE{{/lt}}").apply(context)
         }
     }
 
