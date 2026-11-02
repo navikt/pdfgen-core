@@ -5,6 +5,9 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.github.jknack.handlebars.Helper
 import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.pdfgen.core.template.loadTemplates
+import no.nav.pdfgen.core.util.FontMetadata
+import org.apache.pdfbox.io.IOUtils
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
@@ -14,9 +17,6 @@ import kotlin.io.path.exists
 import kotlin.io.path.extension
 import kotlin.io.path.pathString
 import kotlin.io.path.readBytes
-import no.nav.pdfgen.core.template.loadTemplates
-import no.nav.pdfgen.core.util.FontMetadata
-import org.apache.pdfbox.io.IOUtils
 
 private val log = KotlinLogging.logger {}
 val objectMapper: ObjectMapper = ObjectMapper().findAndRegisterModules().registerKotlinModule()
@@ -44,34 +44,33 @@ class Environment(
         return colorProfile.contentEquals(other.colorProfile)
     }
 
-    override fun hashCode(): Int {
-        return colorProfile.contentHashCode()
-    }
+    override fun hashCode(): Int = colorProfile.contentHashCode()
 
-    fun copy(): Environment {
-        return Environment(
-            additionalHandlebarHelpers = additionalHandlebarHelpers,
-            templateRoot = templateRoot,
-            resourcesRoot = resourcesRoot,
-            fontsRoot = fontsRoot,
-            dataRoot = dataRoot,
-        )
-    }
+    fun copy(): Environment = Environment(
+        additionalHandlebarHelpers = additionalHandlebarHelpers,
+        templateRoot = templateRoot,
+        resourcesRoot = resourcesRoot,
+        fontsRoot = fontsRoot,
+        dataRoot = dataRoot,
+    )
 }
 
-data class PDFGenResource(val path: Path) {
-
+data class PDFGenResource(
+    val path: Path,
+) {
     constructor(path: String) : this(Paths.get(path))
 
     fun readAllBytes(filename: String? = null): ByteArray {
         val filePath = filename?.let { path.resolve(it) } ?: path
-        return if (filePath.exists()) filePath.readBytes()
-        else
+        return if (filePath.exists()) {
+            filePath.readBytes()
+        } else {
             Environment::class
                 .java
                 .classLoader
                 .getResourceAsStream(filePath.pathString)!!
                 .readAllBytes()
+        }
     }
 
     fun toFile(filename: String? = null): File = getPath(filename).toFile()
@@ -79,42 +78,41 @@ data class PDFGenResource(val path: Path) {
     fun getPath(filename: String? = null): Path {
         val filePath = filename?.let { path.resolve(it) } ?: path
         log.trace { "Reading file from path $filePath. File exists on path = ${filePath.exists()}" }
-        return if (filePath.exists()) filePath
-        else
+        return if (filePath.exists()) {
+            filePath
+        } else {
             Environment::class.java.classLoader.getResource(filePath.pathString)?.let {
                 Path.of(it.toURI())
             }
                 ?: throw RuntimeException("Could not find file at path $filePath")
+        }
     }
 }
 
-private fun loadImages(imagesRoot: PDFGenResource) =
-    Files.list(imagesRoot.getPath())
-        .filter {
-            val validExtensions = setOf("jpg", "jpeg", "png", "bmp", "svg")
-            !Files.isHidden(it) && it.fileName.extension in validExtensions
-        }
-        .map {
-            val fileName = it.fileName.toString()
-            val extension =
-                when (it.fileName.extension) {
-                    "jpg" -> "jpeg" // jpg is not a valid mime-type
-                    "svg" -> "svg+xml"
-                    else -> it.fileName.extension
-                }
-            val base64string = Base64.getEncoder().encodeToString(Files.readAllBytes(it))
-            val base64 = "data:image/$extension;base64,$base64string"
-            fileName to base64
-        }
-        .toList()
-        .toMap()
+private fun loadImages(imagesRoot: PDFGenResource) = Files
+    .list(imagesRoot.getPath())
+    .filter {
+        val validExtensions = setOf("jpg", "jpeg", "png", "bmp", "svg")
+        !Files.isHidden(it) && it.fileName.extension in validExtensions
+    }.map {
+        val fileName = it.fileName.toString()
+        val extension =
+            when (it.fileName.extension) {
+                "jpg" -> "jpeg" // jpg is not a valid mime-type
+                "svg" -> "svg+xml"
+                else -> it.fileName.extension
+            }
+        val base64string = Base64.getEncoder().encodeToString(Files.readAllBytes(it))
+        val base64 = "data:image/$extension;base64,$base64string"
+        fileName to base64
+    }.toList()
+    .toMap()
 
-private fun loadResources(imagesRoot: PDFGenResource) =
-    Files.list(imagesRoot.getPath())
-        .filter {
-            val validExtensions = setOf("svg")
-            !Files.isHidden(it) && it.fileName.extension in validExtensions
-        }
-        .map { it.fileName.toString() to Files.readAllBytes(it) }
-        .toList()
-        .toMap()
+private fun loadResources(imagesRoot: PDFGenResource) = Files
+    .list(imagesRoot.getPath())
+    .filter {
+        val validExtensions = setOf("svg")
+        !Files.isHidden(it) && it.fileName.extension in validExtensions
+    }.map { it.fileName.toString() to Files.readAllBytes(it) }
+    .toList()
+    .toMap()

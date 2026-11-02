@@ -1,12 +1,15 @@
 package no.nav.pdfgen.core.util
 
+import org.apache.pdfbox.pdmodel.PDPage
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
 import java.awt.image.BufferedImage
-import org.apache.pdfbox.pdmodel.PDPage
-import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
 
-data class ImageSize(val width: Float, val height: Float)
+data class ImageSize(
+    val width: Float,
+    val height: Float,
+)
 
 fun toPortait(image: BufferedImage): BufferedImage {
     // TYPE_CUSTOM (0) er ikke støttet av AffineTransformOp — normaliser til ARGB
@@ -36,7 +39,10 @@ fun toPortait(image: BufferedImage): BufferedImage {
         .filter(normalized, BufferedImage(normalized.height, normalized.width, normalized.type))
 }
 
-fun scale(image: PDImageXObject, page: PDPage): ImageSize {
+fun scale(
+    image: PDImageXObject,
+    page: PDPage,
+): ImageSize {
     var width = image.width.toFloat()
     var height = image.height.toFloat()
 
