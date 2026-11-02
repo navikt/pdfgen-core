@@ -1,9 +1,10 @@
 package no.nav.pdfgen.core.pdf
 
-import java.io.ByteArrayOutputStream
 import no.nav.pdfgen.getResource
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertNotNull
+import java.io.ByteArrayOutputStream
 
 class CreatePdfKtTest {
     @Test
