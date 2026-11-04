@@ -1,7 +1,9 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 group = "no.nav.pdfgen"
-version = properties["version"]?.takeIf { it is String && it.isNotEmpty() && it != "unspecified" } ?: "local-build"
+version = providers.gradleProperty("version").orNull
+    ?.takeIf { it.isNotEmpty() && it != "unspecified" }
+    ?: "local-build"
 println(version)
 
 val javaVersion = 25
@@ -11,10 +13,8 @@ val handlebarsJackson2Version = "4.3.1"
 val jacksonVersion = "2.22.4"
 val jackson3Version = "3.2.4"
 val jaxbVersion = "4.0.9"
-val jaxbApiVersion = "2.3.1"
 val jsoupVersion = "1.23.2"
 val logbackVersion = "1.6.6"
-val logstashEncoderVersion = "9.0"
 val openHtmlToPdfVersion = "1.1.103"
 val prometheusVersion = "0.16.0"
 val junitJupiterVersion = "6.1.3"
@@ -64,33 +64,31 @@ dependencies {
     }
 
     // PDF generation and templates
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
-    implementation("com.github.jknack:handlebars:$handlebarsVersion")
+    api("com.github.jknack:handlebars:$handlebarsVersion")
     implementation("com.github.jknack:handlebars-jackson2:$handlebarsJackson2Version")
     implementation("io.github.openhtmltopdf:openhtmltopdf-pdfbox:$openHtmlToPdfVersion")
-    implementation("io.github.openhtmltopdf:openhtmltopdf-slf4j:$openHtmlToPdfVersion")
     implementation("io.github.openhtmltopdf:openhtmltopdf-svg-support:$openHtmlToPdfVersion")
-    implementation("org.jsoup:jsoup:$jsoupVersion")
 
     // JSON serialization
+    api("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-    implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
-    implementation("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
+
+    // Runtime dependencies
+    runtimeOnly("io.github.openhtmltopdf:openhtmltopdf-slf4j:$openHtmlToPdfVersion")
+    runtimeOnly("org.jsoup:jsoup:$jsoupVersion")
+    runtimeOnly("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
 
     // Logging and metrics
-    implementation("io.prometheus:simpleclient_common:$prometheusVersion")
-    implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
+    api("io.prometheus:simpleclient:$prometheusVersion")
     implementation("org.verapdf:validation-model-jakarta:$verapdfVersion")
     implementation("io.github.oshai:kotlin-logging-jvm:$kotlinloggerVersion")
-    implementation("ch.qos.logback:logback-classic:$logbackVersion")
-    implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
 
     // Testing
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
+    testImplementation("ch.qos.logback:logback-classic:$logbackVersion")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

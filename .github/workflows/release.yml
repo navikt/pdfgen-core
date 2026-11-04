@@ -12,7 +12,7 @@ env:
 
 jobs:
   build:
-    name: Build and publish docker image
+    name: Build and publish pdfgen-core
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -33,7 +33,7 @@ jobs:
         run: |
           ./gradlew build
 
-      - name: Upload artifact
+      - name: Publish Maven package
         run: ./gradlew -Pversion="$NEW_VERSION" publish
         env:
           GITHUB_USERNAME: x-access-token
