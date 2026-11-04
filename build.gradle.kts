@@ -18,7 +18,7 @@ val logbackVersion = "1.6.6"
 val logstashEncoderVersion = "9.0"
 val openHtmlToPdfVersion = "1.1.100"
 val prometheusVersion = "0.16.0"
-val junitJupiterVersion = "6.1.0"
+val junitJupiterVersion = "6.1.3"
 val verapdfVersion = "1.30.3"
 val kotlinloggerVersion = "8.0.4"
 
