@@ -1,11 +1,10 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-
 group = "no.nav.pdfgen"
 version = properties["version"]?.takeIf { it is String && it.isNotEmpty() && it != "unspecified" } ?: "local-build"
 println(version)
 
-val javaVersion = JvmTarget.JVM_25
+val javaVersion = 25
 
 val handlebarsVersion = "4.5.8"
 val handlebarsJackson2Version = "4.3.1"
@@ -27,38 +26,25 @@ val commonsIoVersion = "2.22.0"
 val rhinoVersion = "1.9.1"
 
 plugins {
+    id("java-library")
     kotlin("jvm") version "2.4.21"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     id("com.github.ben-manes.versions") version "0.66.0"
     id("maven-publish")
-    id("java-library")
 }
 
 kotlin {
+    jvmToolchain(javaVersion)
     compilerOptions {
-        jvmTarget.set(javaVersion)
+        jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()))
     }
 }
 
-tasks {
-    named<Test>("test") {
-        useJUnitPlatform()
-        testLogging {
-            events("passed", "skipped", "failed")
-            showStandardStreams = true
-            showStackTraces = true
-            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-        }
-    }
-
-    named("check") {
-        dependsOn("ktlintCheck")
-    }
+tasks.named<Test>("test") {
+    useJUnitPlatform()
 }
 
-ktlint {
-    version.set("1.8.0")
-}
+ktlint { version.set("1.8.0") }
 
 repositories {
     mavenCentral()
@@ -66,42 +52,42 @@ repositories {
 }
 
 dependencies {
+    // Dependency alignment
+    implementation(platform("tools.jackson:jackson-bom:$jackson3Version"))
     constraints {
         implementation("org.mozilla:rhino:$rhinoVersion") {
             because("Due to vulnerabilities in org.verapdf:validation-model-jakarta")
         }
-    }
-
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
-
-    implementation("com.github.jknack:handlebars:$handlebarsVersion")
-    implementation("com.github.jknack:handlebars-jackson2:$handlebarsJackson2Version")
-    implementation("io.github.openhtmltopdf:openhtmltopdf-pdfbox:$openHtmlToPdfVersion")
-    implementation("io.github.openhtmltopdf:openhtmltopdf-slf4j:$openHtmlToPdfVersion")
-    implementation("io.github.openhtmltopdf:openhtmltopdf-svg-support:$openHtmlToPdfVersion")
-    constraints {
         implementation("commons-io:commons-io:$commonsIoVersion") {
             because("Due to vulnerabilities in io.github.openhtmltopdf:openhtmltopdf-svg-support")
         }
     }
 
+    // PDF generation and templates
+    implementation("org.jetbrains.kotlin:kotlin-stdlib")
+    implementation("com.github.jknack:handlebars:$handlebarsVersion")
+    implementation("com.github.jknack:handlebars-jackson2:$handlebarsJackson2Version")
+    implementation("io.github.openhtmltopdf:openhtmltopdf-pdfbox:$openHtmlToPdfVersion")
+    implementation("io.github.openhtmltopdf:openhtmltopdf-slf4j:$openHtmlToPdfVersion")
+    implementation("io.github.openhtmltopdf:openhtmltopdf-svg-support:$openHtmlToPdfVersion")
     implementation("org.jsoup:jsoup:$jsoupVersion")
+
+    // JSON serialization
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-    implementation(platform("tools.jackson:jackson-bom:$jackson3Version"))
     implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
     implementation("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
 
+    // Logging and metrics
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
-
     implementation("org.verapdf:validation-model-jakarta:$verapdfVersion")
     implementation("io.github.oshai:kotlin-logging-jvm:$kotlinloggerVersion")
-
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
 
+    // Testing
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
@@ -120,7 +106,6 @@ publishing {
             pom {
                 licenses {
                     license {
-                        name.set("MIT License")
                         name = "MIT License"
                         url = "https://opensource.org/licenses/MIT"
                     }
