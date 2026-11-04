@@ -9,7 +9,7 @@ val javaVersion = JvmTarget.JVM_25
 
 val handlebarsVersion = "4.5.8"
 val handlebarsJackson2Version = "4.3.1"
-val jacksonVersion = "2.21.4"
+val jacksonVersion = "2.22.4"
 val jackson3Version = "3.2.4"
 val jaxbVersion = "4.0.9"
 val jaxbApiVersion = "2.3.1"
@@ -18,7 +18,7 @@ val logbackVersion = "1.6.6"
 val logstashEncoderVersion = "9.0"
 val openHtmlToPdfVersion = "1.1.100"
 val prometheusVersion = "0.16.0"
-val junitJupiterVersion = "6.1.0"
+val junitJupiterVersion = "6.1.3"
 val verapdfVersion = "1.30.3"
 val kotlinloggerVersion = "8.0.4"
 
