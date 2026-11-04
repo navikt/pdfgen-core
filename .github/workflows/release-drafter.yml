@@ -10,18 +10,16 @@ on:
 
 permissions:
   contents: read
-    
+
 jobs:
   update_release_draft:
+    timeout-minutes: 10
     permissions:
-      # write permission is required to create a github release
       contents: write
-      # write permission is required for autolabeler
-      # otherwise, read permission is required at least
-      pull-requests: write
+      pull-requests: read
     runs-on: ubuntu-latest
     steps:
-      - uses: release-drafter/release-drafter@v7.10.0
+      - uses: release-drafter/release-drafter@978bb0b30c5ee8cdd332ced253758157150d43f0 # v7.10.0
         with:
           commitish: ${{ github.head_ref || github.ref_name }}
         env:
