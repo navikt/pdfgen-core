@@ -1,7 +1,9 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 group = "no.nav.pdfgen"
-version = properties["version"]?.takeIf { it is String && it.isNotEmpty() && it != "unspecified" } ?: "local-build"
+version = providers.gradleProperty("version").orNull
+    ?.takeIf { it.isNotEmpty() && it != "unspecified" }
+    ?: "local-build"
 println(version)
 
 val javaVersion = 25
@@ -62,12 +64,13 @@ dependencies {
     }
 
     // PDF generation and templates
-    implementation("com.github.jknack:handlebars:$handlebarsVersion")
+    api("com.github.jknack:handlebars:$handlebarsVersion")
     implementation("com.github.jknack:handlebars-jackson2:$handlebarsJackson2Version")
     implementation("io.github.openhtmltopdf:openhtmltopdf-pdfbox:$openHtmlToPdfVersion")
     implementation("io.github.openhtmltopdf:openhtmltopdf-svg-support:$openHtmlToPdfVersion")
 
     // JSON serialization
+    api("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
