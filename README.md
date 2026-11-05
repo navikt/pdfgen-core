@@ -1,4 +1,7 @@
-⚠️ Deprecated ⚠️
+## Maintenance mode
+
+This project is in maintenance mode. No new features are planned. Future changes will focus on bug fixes and security updates.
+
 =============
 # pdfgen-core
 Repository for `pdfgen-core`, an application written in Kotlin used to create PDFs and HTMLs
