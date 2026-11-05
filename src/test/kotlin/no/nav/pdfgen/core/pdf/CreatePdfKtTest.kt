@@ -1,5 +1,6 @@
 package no.nav.pdfgen.core.pdf
 
+import com.sun.management.UnixOperatingSystemMXBean
 import no.nav.pdfgen.core.Environment
 import no.nav.pdfgen.core.PDFGenCore
 import no.nav.pdfgen.core.PDFGenResource
@@ -8,24 +9,39 @@ import no.nav.pdfgen.getResource
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assumptions.assumeTrue
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.io.TempDir
 import org.verapdf.gf.foundry.VeraGreenfieldFoundryProvider
 import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.lang.management.ManagementFactory
+import java.nio.file.Files
 import java.nio.file.Path
 
 class CreatePdfKtTest {
-    private fun initializePdfGeneration() {
+    private fun initializePdfGeneration(fontsRoot: Path = Path.of(requireNotNull(javaClass.getResource("/fonts")).toURI())) {
         // The renderer reads fonts by file path, so point it at the packaged font files.
-        val fontsRoot = Path.of(requireNotNull(javaClass.getResource("/fonts")).toURI())
         PDFGenCore.init(Environment(fontsRoot = PDFGenResource(fontsRoot)))
         // PDF/A validation needs VeraPDF's provider registered.
         VeraGreenfieldFoundryProvider.initialise()
     }
 
+    private fun fileDescriptorBeanOrSkip(): UnixOperatingSystemMXBean {
+        val fdBean = ManagementFactory.getOperatingSystemMXBean() as? UnixOperatingSystemMXBean
+        assumeTrue(fdBean != null, "Open file descriptor count is only available on Unix-like JVMs")
+        return requireNotNull(fdBean)
+    }
+
     private fun testPayload() = requireNotNull(javaClass.getResourceAsStream("/data/dsopkontroll/kontrollforespoersel.json"))
         .use { objectMapper.readTree(it) }
+
+    private companion object {
+        const val RENDER_COUNT = 10
+        const val MAX_DESCRIPTOR_INCREASE = 5L
+    }
 
     @Nested
     inner class HtmlInput {
@@ -40,6 +56,81 @@ class CreatePdfKtTest {
 
             // Assert
             assertTrue(generatedPdf.isNotEmpty())
+        }
+
+        @Test
+        fun `does not leak file descriptors after repeated successful renders`() {
+            // Arrange
+            val fdBean = fileDescriptorBeanOrSkip()
+            initializePdfGeneration()
+            val html = "<html><body>test</body></html>"
+            createPDFA(html)
+            val baseline = fdBean.openFileDescriptorCount
+
+            // Act
+            repeat(RENDER_COUNT) {
+                createPDFA(html)
+            }
+            val increase = fdBean.openFileDescriptorCount - baseline
+
+            // Assert
+            assertTrue(
+                increase <= MAX_DESCRIPTOR_INCREASE,
+                "Expected at most $MAX_DESCRIPTOR_INCREASE additional file descriptors after " +
+                    "$RENDER_COUNT successful renders, but observed an increase of $increase",
+            )
+        }
+
+        @Test
+        fun `closes font resources when registration fails after opening a font`(
+            @TempDir fontsRoot: Path,
+        ) {
+            // Arrange
+            val fdBean = fileDescriptorBeanOrSkip()
+            Files.write(
+                fontsRoot.resolve("SourceSansPro-Regular.ttf"),
+                getResource<ByteArray>("/fonts/SourceSansPro-Regular.ttf"),
+            )
+            Files.writeString(
+                fontsRoot.resolve("config.json"),
+                """
+                [
+                  {
+                    "family": "Source Sans Pro",
+                    "path": "SourceSansPro-Regular.ttf",
+                    "weight": 400,
+                    "style": "NORMAL",
+                    "subset": false
+                  },
+                  {
+                    "family": "Missing",
+                    "path": "missing.ttf",
+                    "weight": 400,
+                    "style": "NORMAL",
+                    "subset": false
+                  }
+                ]
+                """.trimIndent(),
+            )
+            initializePdfGeneration(fontsRoot)
+            val html = "<html><body>test</body></html>"
+
+            // Warm up file loading before measuring descriptor growth.
+            assertThrows<IOException> { createPDFA(html) }
+            val baseline = fdBean.openFileDescriptorCount
+
+            // Act
+            repeat(RENDER_COUNT) {
+                assertThrows<IOException> { createPDFA(html) }
+            }
+            val increase = fdBean.openFileDescriptorCount - baseline
+
+            // Assert
+            assertTrue(
+                increase <= MAX_DESCRIPTOR_INCREASE,
+                "Expected at most $MAX_DESCRIPTOR_INCREASE additional file descriptors after " +
+                    "$RENDER_COUNT partial font registrations, but observed an increase of $increase",
+            )
         }
     }
 
@@ -130,7 +221,7 @@ class CreatePdfKtTest {
             val outputStream = ByteArrayOutputStream()
 
             // Act
-            assertThrows<java.io.IOException> {
+            assertThrows<IOException> {
                 createPDFA(imageStream = image.inputStream(), outputStream = outputStream)
             }
 
