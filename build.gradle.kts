@@ -82,6 +82,7 @@ dependencies {
     runtimeOnly("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
 
     // Logging and metrics
+    // Deprecated compatibility API; remove with the Simpleclient fallback in 2.0.0.
     api("io.prometheus:simpleclient:$prometheusVersion")
     api("io.micrometer:micrometer-core:$micrometerVersion")
     implementation("org.verapdf:validation-model-jakarta:$verapdfVersion")

@@ -25,6 +25,7 @@ class MetricsTest {
     }
 
     @Test
+    @Suppress("DEPRECATION")
     fun `render should retain legacy Prometheus metrics when no registry is supplied`() {
         PDFGenCore.init(Environment())
         val before = HANDLEBARS_RENDERING_SUMMARY.get().count

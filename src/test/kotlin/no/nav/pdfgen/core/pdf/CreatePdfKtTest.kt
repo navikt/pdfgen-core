@@ -22,6 +22,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 class CreatePdfKtTest {
+    @Suppress("DEPRECATION")
     private fun initializePdfGeneration(fontsRoot: Path = Path.of(requireNotNull(javaClass.getResource("/fonts")).toURI())) {
         // The renderer reads fonts by file path, so point it at the packaged font files.
         PDFGenCore.init(Environment(fontsRoot = PDFGenResource(fontsRoot)))

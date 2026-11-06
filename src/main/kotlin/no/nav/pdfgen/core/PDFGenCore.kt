@@ -10,6 +10,9 @@ private val log = KotlinLogging.logger {}
 
 class PDFGenCore {
     companion object {
+        @Deprecated(
+            message = "Pass a Micrometer MeterRegistry to init(); Simpleclient fallback will be removed in 2.0.0.",
+        )
         fun init(initialEnvironment: Environment) {
             coreEnvironment.set(initialEnvironment)
             coreMeterRegistry.set(null)

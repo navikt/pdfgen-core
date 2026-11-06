@@ -26,6 +26,7 @@ class HelperTest {
         .apply { registerNavHelpers(this) }
 
     @BeforeEach
+    @Suppress("DEPRECATION")
     fun init() {
         PDFGenCore.init(Environment())
     }
