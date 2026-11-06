@@ -14,28 +14,13 @@ class MetricsTest {
         PDFGenCore.init(Environment(), meterRegistry)
 
         render(
-            "dsopkontroll",
-            "kontrollforespoersel",
-            JsonNodeFactory.instance.objectNode(),
+            directoryName = "dsopkontroll",
+            template = "kontrollforespoersel",
+            jsonNode = JsonNodeFactory.instance.objectNode(),
         )
 
         val timer = meterRegistry.find("pdfgen_core.handlebars.rendering").timer()
         assertNotNull(timer)
         assertEquals(1L, timer?.count())
-    }
-
-    @Test
-    @Suppress("DEPRECATION")
-    fun `render should retain legacy Prometheus metrics when no registry is supplied`() {
-        PDFGenCore.init(Environment())
-        val before = HANDLEBARS_RENDERING_SUMMARY.get().count
-
-        render(
-            "dsopkontroll",
-            "kontrollforespoersel",
-            JsonNodeFactory.instance.objectNode(),
-        )
-
-        assertEquals(before + 1.0, HANDLEBARS_RENDERING_SUMMARY.get().count)
     }
 }

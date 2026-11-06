@@ -16,7 +16,6 @@ val jaxbVersion = "4.0.9"
 val jsoupVersion = "1.23.2"
 val logbackVersion = "1.6.6"
 val openHtmlToPdfVersion = "1.1.105"
-val prometheusVersion = "0.16.0"
 val micrometerVersion = "1.17.2"
 val junitJupiterVersion = "6.1.3"
 val verapdfVersion = "1.30.3"
@@ -82,8 +81,6 @@ dependencies {
     runtimeOnly("org.glassfish.jaxb:jaxb-runtime:$jaxbVersion")
 
     // Logging and metrics
-    // Deprecated compatibility API; remove with the Simpleclient fallback in 2.0.0.
-    api("io.prometheus:simpleclient:$prometheusVersion")
     api("io.micrometer:micrometer-core:$micrometerVersion")
     implementation("org.verapdf:validation-model-jakarta:$verapdfVersion")
     implementation("io.github.oshai:kotlin-logging-jvm:$kotlinloggerVersion")

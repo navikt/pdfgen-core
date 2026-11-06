@@ -8,6 +8,7 @@ import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.JsonNodeValueResolver
 import com.github.jknack.handlebars.context.MapValueResolver
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.pdfgen.core.Environment
 import no.nav.pdfgen.core.PDFGenCore
 import no.nav.pdfgen.core.objectMapper
@@ -26,9 +27,11 @@ class HelperTest {
         .apply { registerNavHelpers(this) }
 
     @BeforeEach
-    @Suppress("DEPRECATION")
     fun init() {
-        PDFGenCore.init(Environment())
+        PDFGenCore.init(
+            initialEnvironment = Environment(),
+            meterRegistry = SimpleMeterRegistry(),
+        )
     }
 
     private fun jsonContext(jsonNode: JsonNode): Context {

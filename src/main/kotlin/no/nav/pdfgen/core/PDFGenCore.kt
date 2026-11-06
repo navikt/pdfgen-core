@@ -4,20 +4,12 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.micrometer.core.instrument.MeterRegistry
 import java.util.concurrent.atomic.AtomicReference
 
-private val coreEnvironment: AtomicReference<Environment?> = AtomicReference<Environment?>(null)
-private val coreMeterRegistry: AtomicReference<MeterRegistry?> = AtomicReference<MeterRegistry?>(null)
+private val coreEnvironment = AtomicReference<Environment?>(null)
+private val coreMeterRegistry = AtomicReference<MeterRegistry?>(null)
 private val log = KotlinLogging.logger {}
 
 class PDFGenCore {
     companion object {
-        @Deprecated(
-            message = "Pass a Micrometer MeterRegistry to init(); Simpleclient fallback will be removed in 2.0.0.",
-        )
-        fun init(initialEnvironment: Environment) {
-            coreEnvironment.set(initialEnvironment)
-            coreMeterRegistry.set(null)
-        }
-
         fun init(
             initialEnvironment: Environment,
             meterRegistry: MeterRegistry,
