@@ -5,9 +5,9 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.JsonNodeValueResolver
 import com.github.jknack.handlebars.context.MapValueResolver
-import no.nav.pdfgen.core.HANDLEBARS_RENDERING_SUMMARY
 import no.nav.pdfgen.core.PDFGenCore
 import no.nav.pdfgen.core.objectMapper
+import no.nav.pdfgen.core.recordHandlebarsRendering
 import java.nio.file.Files
 
 fun createHtml(
@@ -28,18 +28,16 @@ fun render(
     directoryName: String,
     template: String,
     jsonNode: JsonNode,
-): String? = HANDLEBARS_RENDERING_SUMMARY
-    .startTimer()
-    .use {
-        PDFGenCore.environment.templates[directoryName to template]?.apply(
-            Context
-                .newBuilder(jsonNode)
-                .resolver(
-                    JsonNodeValueResolver.INSTANCE,
-                    MapValueResolver.INSTANCE,
-                ).build(),
-        )
-    }
+): String? = recordHandlebarsRendering {
+    PDFGenCore.environment.templates[directoryName to template]?.apply(
+        Context
+            .newBuilder(jsonNode)
+            .resolver(
+                JsonNodeValueResolver.INSTANCE,
+                MapValueResolver.INSTANCE,
+            ).build(),
+    )
+}
 
 private fun hotTemplateData(
     applicationName: String,

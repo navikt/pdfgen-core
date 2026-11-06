@@ -17,6 +17,7 @@ val jsoupVersion = "1.23.2"
 val logbackVersion = "1.6.6"
 val openHtmlToPdfVersion = "1.1.104"
 val prometheusVersion = "0.16.0"
+val micrometerVersion = "1.17.2"
 val junitJupiterVersion = "6.1.3"
 val verapdfVersion = "1.30.3"
 val kotlinloggerVersion = "8.0.4"
@@ -82,6 +83,7 @@ dependencies {
 
     // Logging and metrics
     api("io.prometheus:simpleclient:$prometheusVersion")
+    api("io.micrometer:micrometer-core:$micrometerVersion")
     implementation("org.verapdf:validation-model-jakarta:$verapdfVersion")
     implementation("io.github.oshai:kotlin-logging-jvm:$kotlinloggerVersion")
 
