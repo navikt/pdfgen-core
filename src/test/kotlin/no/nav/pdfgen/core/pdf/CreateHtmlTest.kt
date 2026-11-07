@@ -16,11 +16,10 @@ class CreateHtmlTest {
     fun `should render HTML without logging payloads or HTML`() {
         val logger = LoggerFactory.getLogger("no.nav.pdfgen.core.pdf.CreateHtml") as Logger
         val originalLevel = logger.level
-        val appender =
-            ListAppender<ILoggingEvent>().apply {
-                context = logger.loggerContext
-                start()
-            }
+        val appender = ListAppender<ILoggingEvent>().apply {
+            context = logger.loggerContext
+            start()
+        }
         logger.level = Level.DEBUG
         logger.addAppender(appender)
 
@@ -51,10 +50,10 @@ class CreateHtmlTest {
             assertTrue(renderedHtml?.contains("synthetic-payload-marker") == true)
             assertNull(render("dsopkontroll", "unknown-template", payload))
 
-            val debugMessages =
-                appender.list
-                    .filter { it.level == Level.DEBUG }
-                    .map { it.formattedMessage }
+            val debugMessages = appender.list
+                .filter { it.level == Level.DEBUG }
+                .map { it.formattedMessage }
+
             assertFalse(
                 debugMessages.any {
                     it.contains("JSON") ||

@@ -29,10 +29,9 @@ class Environment(
     val dataRoot: PDFGenResource = PDFGenResource("data/"),
 ) {
     // Reloading opens a new resource stream; close it after reading the profile.
-    val colorProfile: ByteArray =
-        Environment::class.java.getResourceAsStream("/sRGB2014.icc")?.use {
-            IOUtils.toByteArray(it)
-        } ?: throw RuntimeException("Could not find ICC color profile")
+    val colorProfile: ByteArray = Environment::class.java.getResourceAsStream("/sRGB2014.icc")?.use {
+        IOUtils.toByteArray(it)
+    } ?: throw RuntimeException("Could not find ICC color profile")
     val images: Map<String, String> = loadImages(resourcesRoot)
     val resources: Map<String, ByteArray> = loadResources(resourcesRoot)
     val fonts: List<FontMetadata> = objectMapper.readValue(fontsRoot.readAllBytes("config.json"))
@@ -102,12 +101,11 @@ private fun loadImages(imagesRoot: PDFGenResource) = Files.list(imagesRoot.getPa
             !Files.isHidden(it) && it.fileName.extension in validExtensions
         }.map {
             val fileName = it.fileName.toString()
-            val extension =
-                when (it.fileName.extension) {
-                    "jpg" -> "jpeg" // jpg is not a valid mime-type
-                    "svg" -> "svg+xml"
-                    else -> it.fileName.extension
-                }
+            val extension = when (it.fileName.extension) {
+                "jpg" -> "jpeg" // jpg is not a valid mime-type
+                "svg" -> "svg+xml"
+                else -> it.fileName.extension
+            }
             val base64string = Base64.getEncoder().encodeToString(Files.readAllBytes(it))
             val base64 = "data:image/$extension;base64,$base64string"
             fileName to base64

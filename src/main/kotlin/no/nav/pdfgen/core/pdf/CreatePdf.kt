@@ -55,8 +55,16 @@ fun createPDFA(
     directoryName: String,
     jsonPayload: JsonNode? = null,
 ): ByteArray? {
-    val html = jsonPayload?.let { createHtml(template, directoryName, it) }
-        ?: createHtmlFromTemplateData(template, directoryName)
+    val html = jsonPayload?.let {
+        createHtml(
+            template = template,
+            directoryName = directoryName,
+            jsonPayload = it,
+        )
+    } ?: createHtmlFromTemplateData(
+        template = template,
+        directoryName = directoryName,
+    )
 
     return html?.let { createPDFA(it) }
 }
@@ -123,7 +131,11 @@ private fun withLoadedFonts(
 
         val font = fonts[index]
         // Keep the font file and parsed font alive while PDFBox embeds glyphs during rendering.
-        RandomAccessReadBufferedFile(fontsRoot.resolve(font.path).toString()).use { fontFile ->
+        RandomAccessReadBufferedFile(
+            fontsRoot
+                .resolve(font.path)
+                .toString(),
+        ).use { fontFile ->
             TTFParser().parse(fontFile).use { ttf ->
                 ttf.isEnableGsub = false
                 // PDType0Font is attached to this document, which must outlive the render.
@@ -167,7 +179,11 @@ fun createPDFA(
 
         val pdImage =
             try {
-                JPEGFactory.createFromImage(document, image, quality)
+                JPEGFactory.createFromImage(
+                    document,
+                    image,
+                    quality,
+                )
             } catch (_: javax.imageio.IIOException) {
                 // To avoid "javax.imageio.IIOException: Illegal band size: should be 0 < size <= 8"
                 // for certain black/white pictures
@@ -176,7 +192,12 @@ fun createPDFA(
 
         val imageSize = scale(pdImage, page)
 
-        PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, false).use {
+        PDPageContentStream(
+            document,
+            page,
+            PDPageContentStream.AppendMode.APPEND,
+            false,
+        ).use {
             it.drawImage(pdImage, Matrix(imageSize.width, 0f, 0f, imageSize.height, 0f, 0f))
         }
 
@@ -204,7 +225,11 @@ fun createPDFA(
             throw IllegalArgumentException(e)
         }
 
-        val intent = PDOutputIntent(document, PDFGenCore.environment.colorProfile.inputStream())
+        val intent = PDOutputIntent(
+            document,
+            PDFGenCore.environment.colorProfile.inputStream(),
+        )
+
         intent.info = "sRGB IEC61966-2.1"
         intent.outputCondition = "sRGB IEC61966-2.1"
         intent.outputConditionIdentifier = "sRGB IEC61966-2.1"
@@ -239,16 +264,25 @@ private fun verifyCompliance(
     val foundry = Foundries.defaultInstance()
     return ByteArrayInputStream(input).use { pdf ->
         // The parser and validator only serve this PDF; use closes them on success or failure.
-        foundry.createValidator(flavour, false).use { validator ->
-            val result = foundry.createParser(pdf).use { parser -> validator.validate(parser) }
-            val failures = result.testAssertions.filter { it.status != TestAssertion.Status.PASSED }
-            failures.forEach { test ->
-                log.warn { test.message }
-                log.warn { "Location ${test.location.context} ${test.location.level}" }
-                log.warn { "Status ${test.status}" }
-                log.warn { "Test number ${test.ruleId.testNumber}" }
+        foundry
+            .createValidator(
+                flavour,
+                false,
+            ).use { validator ->
+                val result = foundry
+                    .createParser(pdf)
+                    .use { parser -> validator.validate(parser) }
+
+                val failures = result.testAssertions
+                    .filter { it.status != TestAssertion.Status.PASSED }
+
+                failures.forEach { test ->
+                    log.warn { test.message }
+                    log.warn { "Location ${test.location.context} ${test.location.level}" }
+                    log.warn { "Status ${test.status}" }
+                    log.warn { "Test number ${test.ruleId.testNumber}" }
+                }
+                failures.isEmpty()
             }
-            failures.isEmpty()
-        }
     }
 }
