@@ -29,7 +29,7 @@ plugins {
     id("java-library")
     kotlin("jvm") version "2.4.21"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
-    id("com.github.ben-manes.versions") version "0.66.0"
+    id("io.github.ben-manes.versions") version "0.66.0"
     id("maven-publish")
 }
 
@@ -53,6 +53,7 @@ repositories {
 
 dependencies {
     // Dependency alignment
+    implementation(platform("org.ow2.asm:asm-bom:9.11.1"))
     implementation(platform("tools.jackson:jackson-bom:$jackson3Version"))
     constraints {
         implementation("org.mozilla:rhino:$rhinoVersion") {

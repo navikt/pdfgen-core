@@ -124,11 +124,11 @@ fun registerNavHelpers(
         registerHelper(
             "json_to_period",
             Helper<Any> { context, _ ->
-                val jsonString: String? =
-                    when (context) {
-                        is String -> context
-                        else -> context?.let { objectMapper.writeValueAsString(it) }
-                    }
+                val jsonString: String? = when (context) {
+                    is String -> context
+                    else -> context?.let { objectMapper.writeValueAsString(it) }
+                }
+
                 when (jsonString) {
                     null -> return@Helper ""
                     else -> {
@@ -278,11 +278,10 @@ fun registerNavHelpers(
             Helper<Iterable<Any>?> { list, options ->
                 val checkfor = options.param(0, null as String?)
 
-                val contains =
-                    list
-                        ?.map { Context.newContext(options.context, it) }
-                        ?.any { ctx -> !options.isFalsy(ctx.get(checkfor)) }
-                        ?: false
+                val contains = list
+                    ?.map { Context.newContext(options.context, it) }
+                    ?.any { ctx -> !options.isFalsy(ctx.get(checkfor)) }
+                    ?: false
 
                 if (contains) {
                     options.fn()

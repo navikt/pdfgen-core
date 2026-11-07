@@ -14,14 +14,26 @@ fun createHtml(
     template: String,
     directoryName: String,
     jsonPayload: JsonNode,
-): String? = render(directoryName, template, jsonPayload)
+): String? = render(
+    directoryName = directoryName,
+    template = template,
+    jsonNode = jsonPayload,
+)
 
 fun createHtmlFromTemplateData(
     template: String,
     directoryName: String,
 ): String? {
-    val jsonNode = hotTemplateData(directoryName, template)
-    return render(directoryName, template, jsonNode)
+    val jsonNode = hotTemplateData(
+        applicationName = directoryName,
+        template = template,
+    )
+
+    return render(
+        directoryName = directoryName,
+        template = template,
+        jsonNode = jsonNode,
+    )
 }
 
 fun render(

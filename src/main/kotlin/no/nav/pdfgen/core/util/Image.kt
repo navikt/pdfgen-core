@@ -13,30 +13,35 @@ data class ImageSize(
 
 fun toPortait(image: BufferedImage): BufferedImage {
     // TYPE_CUSTOM (0) er ikke støttet av AffineTransformOp — normaliser til ARGB
-    val normalized =
-        if (image.type == BufferedImage.TYPE_CUSTOM) {
-            BufferedImage(image.width, image.height, BufferedImage.TYPE_INT_ARGB).also {
-                val g = it.createGraphics()
-                g.drawImage(image, 0, 0, null)
-                g.dispose()
-            }
-        } else {
-            image
+    val normalized = if (image.type == BufferedImage.TYPE_CUSTOM) {
+        BufferedImage(image.width, image.height, BufferedImage.TYPE_INT_ARGB).also {
+            val g = it.createGraphics()
+            g.drawImage(image, 0, 0, null)
+            g.dispose()
         }
-
-    if (normalized.height >= normalized.width) {
-        return normalized
+    } else {
+        image
     }
 
-    val rotateTransform =
-        AffineTransform.getRotateInstance(
-            Math.toRadians(90.0),
-            (normalized.height / 2f).toDouble(),
-            (normalized.height / 2f).toDouble(),
-        )
+    if (normalized.height >= normalized.width) return normalized
 
-    return AffineTransformOp(rotateTransform, AffineTransformOp.TYPE_BILINEAR)
-        .filter(normalized, BufferedImage(normalized.height, normalized.width, normalized.type))
+    val rotateTransform = AffineTransform.getRotateInstance(
+        Math.toRadians(90.0),
+        (normalized.height / 2f).toDouble(),
+        (normalized.height / 2f).toDouble(),
+    )
+
+    return AffineTransformOp(
+        rotateTransform,
+        AffineTransformOp.TYPE_BILINEAR,
+    ).filter(
+        normalized,
+        BufferedImage(
+            normalized.height,
+            normalized.width,
+            normalized.type,
+        ),
+    )
 }
 
 fun scale(

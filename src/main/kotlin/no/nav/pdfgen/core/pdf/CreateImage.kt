@@ -5,6 +5,9 @@ import java.io.InputStream
 
 @Suppress("unused")
 fun createPdfFromImage(inputStream: InputStream): ByteArray = ByteArrayOutputStream().use { outputStream ->
-    createPDFA(inputStream, outputStream)
+    createPDFA(
+        imageStream = inputStream,
+        outputStream = outputStream,
+    )
     outputStream.toByteArray()
 }
