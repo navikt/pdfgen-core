@@ -54,6 +54,7 @@ repositories {
 
 dependencies {
     // Dependency alignment
+    implementation(platform("org.ow2.asm:asm-bom:9.11.1"))
     implementation(platform("tools.jackson:jackson-bom:$jackson3Version"))
     constraints {
         implementation("org.mozilla:rhino:$rhinoVersion") {
