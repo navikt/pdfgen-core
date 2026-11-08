@@ -4,8 +4,9 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.micrometer.core.instrument.MeterRegistry
 import java.util.concurrent.atomic.AtomicReference
 
-private val coreEnvironment: AtomicReference<Environment?> = AtomicReference<Environment?>(null)
-private val coreMeterRegistry: AtomicReference<MeterRegistry?> = AtomicReference<MeterRegistry?>(null)
+private val coreEnvironment: AtomicReference<Environment> = AtomicReference(null)
+private val coreMeterRegistry: AtomicReference<MeterRegistry> = AtomicReference(null)
+
 private val log = KotlinLogging.logger {}
 
 class PDFGenCore {
