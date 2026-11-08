@@ -1,5 +1,6 @@
 package no.nav.pdfgen
 
+import com.github.jknack.handlebars.HandlebarsException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -298,10 +299,10 @@ class CurrencyFormattingTest : HelperTestSupport() {
         val context = jsonContext(values)
 
         // Act and assert
-        assertThrows<Exception> {
+        assertThrows<HandlebarsException> {
             handlebars.compileInline("{{ string_as_currency_no too_large }}").apply(context)
         }
-        assertThrows<Exception> {
+        assertThrows<HandlebarsException> {
             handlebars.compileInline("{{ string_as_currency_no too_small }}").apply(context)
         }
     }

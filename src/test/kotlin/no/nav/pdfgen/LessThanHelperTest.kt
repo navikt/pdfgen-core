@@ -1,5 +1,6 @@
 package no.nav.pdfgen
 
+import com.github.jknack.handlebars.HandlebarsException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -138,17 +139,17 @@ class LessThanHelperTest : HelperTestSupport() {
         )
 
         // Act and assert
-        assertThrows<Exception> {
+        assertThrows<HandlebarsException> {
             handlebars
                 .compileInline("{{#lt int_string large_int }}TRUE{{else}}FALSE{{/lt}}")
                 .apply(context)
         }
-        assertThrows<Exception> {
+        assertThrows<HandlebarsException> {
             handlebars
                 .compileInline("{{#lt small_double a_string }}TRUE{{else}}FALSE{{/lt}}")
                 .apply(context)
         }
-        assertThrows<Exception> {
+        assertThrows<HandlebarsException> {
             handlebars
                 .compileInline("{{#lt small_double small_int }}TRUE{{else}}FALSE{{/lt}}")
                 .apply(context)
@@ -170,17 +171,17 @@ class LessThanHelperTest : HelperTestSupport() {
         )
 
         // Act and assert
-        assertThrows<Exception> {
+        assertThrows<HandlebarsException> {
             handlebars
                 .compileInline("{{#lt int_string noexists }}TRUE{{else}}FALSE{{/lt}}")
                 .apply(context)
         }
-        assertThrows<Exception> {
+        assertThrows<HandlebarsException> {
             handlebars
                 .compileInline("{{#lt small_double null }}TRUE{{else}}FALSE{{/lt}}")
                 .apply(context)
         }
-        assertThrows<Exception> {
+        assertThrows<HandlebarsException> {
             handlebars.compileInline("{{#lt small_double }}TRUE{{else}}FALSE{{/lt}}").apply(context)
         }
     }
