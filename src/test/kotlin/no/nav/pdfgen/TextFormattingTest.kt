@@ -103,7 +103,7 @@ class TextFormattingTest : HelperTestSupport() {
         val actual = handlebars.compileInline("{{capitalize_names \" O'SHEA OLSEN \"}}").apply(context)
 
         // Assert
-        assertEquals("O'Shea Olsen", actual)
+        assertEquals("O&#x27;Shea Olsen", actual)
     }
 
     @Test
@@ -128,6 +128,20 @@ class TextFormattingTest : HelperTestSupport() {
 
         // Assert
         assertEquals("Brage", actual)
+    }
+
+    @Test
+    fun `capitalize_names should escape HTML markup in input`() {
+        // Arrange
+        val context = jsonContext(
+            jsonNodeFactory.objectNode().put("name", "<script>alert('x')</script>"),
+        )
+
+        // Act
+        val actual = handlebars.compileInline("{{capitalize_names name}}").apply(context)
+
+        // Assert
+        assertEquals("&lt;script&gt;alert(&#x27;X&#x27;)&lt;/script&gt;", actual)
     }
 
     @Test
