@@ -3,6 +3,7 @@ package no.nav.pdfgen.core.util
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.awt.Color
 import java.awt.Transparency
 import java.awt.color.ColorSpace
 import java.awt.image.BufferedImage
@@ -23,6 +24,31 @@ class ImageKtTest {
         val landscape = BufferedImage(200, 100, BufferedImage.TYPE_INT_RGB)
         val result = toPortait(landscape)
         assertTrue(result.height >= result.width, "Bilde skal være stående etter rotasjon")
+    }
+
+    @Test
+    fun `toPortait preserves all pixels when rotating landscape image`() {
+        // Arrange
+        val landscape = BufferedImage(4, 2, BufferedImage.TYPE_INT_RGB)
+        val colors = listOf(
+            listOf(Color.RED.rgb, Color.GREEN.rgb, Color.BLUE.rgb, Color.YELLOW.rgb),
+            listOf(Color.CYAN.rgb, Color.MAGENTA.rgb, Color.ORANGE.rgb, Color.PINK.rgb),
+        )
+        colors.forEachIndexed { y, row ->
+            row.forEachIndexed { x, color -> landscape.setRGB(x, y, color) }
+        }
+
+        // Act
+        val result = toPortait(landscape)
+
+        // Assert
+        assertEquals(2, result.width)
+        assertEquals(4, result.height)
+        colors.forEachIndexed { y, row ->
+            row.forEachIndexed { x, color ->
+                assertEquals(color, result.getRGB(1 - y, x), "Pixel ($x, $y) should be preserved")
+            }
+        }
     }
 
     @Test
