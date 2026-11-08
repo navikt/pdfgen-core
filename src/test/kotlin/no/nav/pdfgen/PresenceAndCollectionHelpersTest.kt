@@ -1,5 +1,6 @@
 package no.nav.pdfgen
 
+import com.github.jknack.handlebars.HandlebarsException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -170,7 +171,7 @@ class PresenceAndCollectionHelpersTest : HelperTestSupport() {
         )
 
         // Act and assert
-        assertThrows<Exception> {
+        assertThrows<HandlebarsException> {
             handlebars
                 .compileInline(
                     """{{#contains_all dontexist "UNKNOWN"}}FOUND!{{else}}NOTHING!{{/contains_all }}""",
