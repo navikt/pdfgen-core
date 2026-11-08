@@ -9,32 +9,30 @@ private val coreMeterRegistry: AtomicReference<MeterRegistry> = AtomicReference(
 
 private val log = KotlinLogging.logger {}
 
-class PDFGenCore {
-    companion object {
-        fun init(
-            initialEnvironment: Environment,
-            meterRegistry: MeterRegistry,
-        ) {
-            coreEnvironment.set(initialEnvironment)
-            coreMeterRegistry.set(meterRegistry)
-        }
+object PDFGenCore {
+    fun init(
+        initialEnvironment: Environment,
+        meterRegistry: MeterRegistry,
+    ) {
+        coreEnvironment.set(initialEnvironment)
+        coreMeterRegistry.set(meterRegistry)
+    }
 
-        val environment: Environment
-            get() = coreEnvironment.updateAndGet { current ->
-                current ?: Environment().also {
-                    log.debug { "Creating default Environment" }
-                }
-            }!!
-
-        internal val meterRegistry: MeterRegistry?
-            get() = coreMeterRegistry.get()
-
-        @Suppress("unused")
-        fun reloadEnvironment() {
-            log.debug { "Reloading environment" }
-            coreEnvironment.updateAndGet { currentEnv ->
-                currentEnv?.copy() ?: Environment()
+    val environment: Environment
+        get() = coreEnvironment.updateAndGet { current ->
+            current ?: Environment().also {
+                log.debug { "Creating default Environment" }
             }
+        }!!
+
+    internal val meterRegistry: MeterRegistry?
+        get() = coreMeterRegistry.get()
+
+    @Suppress("unused")
+    fun reloadEnvironment() {
+        log.debug { "Reloading environment" }
+        coreEnvironment.updateAndGet { currentEnv ->
+            currentEnv?.copy() ?: Environment()
         }
     }
 }
