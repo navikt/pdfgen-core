@@ -1,7 +1,7 @@
 package no.nav.pdfgen
 
 inline fun <reified T> getResource(path: String): T {
-    val stream = checkNotNull(HelperTest::class.java.getResourceAsStream(path)) {
+    val stream = checkNotNull(HelperTestSupport::class.java.getResourceAsStream(path)) {
         "Test resource not found: $path"
     }
 
