@@ -55,6 +55,7 @@ fun createPDFA(
     directoryName: String,
     jsonPayload: JsonNode? = null,
 ): ByteArray? {
+    // Use request data when present; otherwise load the template's default data.
     val html = jsonPayload?.let {
         createHtml(
             template = template,
@@ -97,6 +98,7 @@ fun createPDFA(html: String): ByteArray {
         }
         outputStream.toByteArray()
     }
+    // Validate the serialized bytes so non-compliant output is never returned.
     require(verifyCompliance(pdf)) { "Non-compliant PDF/A :(" }
     return pdf
 }
@@ -136,12 +138,19 @@ private fun withLoadedFonts(
                 .resolve(font.path)
                 .toString(),
         ).use { fontFile ->
-            TTFParser().parse(fontFile).use { ttf ->
-                ttf.isEnableGsub = false
+            TTFParser().parse(fontFile).use { trueTypeFont ->
+                trueTypeFont.isEnableGsub = false
+
                 // PDType0Font is attached to this document, which must outlive the render.
                 PDDocument().use { fontDocument ->
                     builder.useFont(
-                        PDFontSupplier(PDType0Font.load(fontDocument, ttf, font.subset)),
+                        PDFontSupplier(
+                            PDType0Font.load(
+                                fontDocument,
+                                trueTypeFont,
+                                font.subset,
+                            ),
+                        ),
                         font.family,
                         font.weight,
                         font.style,
@@ -173,22 +182,21 @@ fun createPDFA(
     PDDocument().use { document ->
         val page = PDPage(PDRectangle.A4)
         document.addPage(page)
+        // Decode once; null means ImageIO did not recognize the input format.
         val image = toPortait(requireNotNull(ImageIO.read(imageStream)) { "Unsupported image format" })
 
         val quality = 1.0f
 
-        val pdImage =
-            try {
-                JPEGFactory.createFromImage(
-                    document,
-                    image,
-                    quality,
-                )
-            } catch (_: javax.imageio.IIOException) {
-                // To avoid "javax.imageio.IIOException: Illegal band size: should be 0 < size <= 8"
-                // for certain black/white pictures
-                LosslessFactory.createFromImage(document, image)
-            }
+        val pdImage = try {
+            JPEGFactory.createFromImage(
+                document,
+                image,
+                quality,
+            )
+        } catch (_: javax.imageio.IIOException) {
+            // The ImageIO JPEG writer rejects some grayscale sample layouts; keep those images lossless.
+            LosslessFactory.createFromImage(document, image)
+        }
 
         val imageSize = scale(pdImage, page)
 
@@ -198,13 +206,24 @@ fun createPDFA(
             PDPageContentStream.AppendMode.APPEND,
             false,
         ).use {
-            it.drawImage(pdImage, Matrix(imageSize.width, 0f, 0f, imageSize.height, 0f, 0f))
+            it.drawImage(
+                pdImage,
+                Matrix(
+                    imageSize.width,
+                    0f,
+                    0f,
+                    imageSize.height,
+                    0f,
+                    0f,
+                ),
+            )
         }
 
         val xmp = XMPMetadata.createXMPMetadata()
         val catalog = document.documentCatalog
         val cal = Calendar.getInstance()
 
+        // Add PDF/A identification, language, accessibility, and color-profile metadata before saving.
         try {
             val dc = xmp.createAndAddDublinCoreSchema()
             dc.addCreator("pdfgen-coree")
@@ -225,10 +244,11 @@ fun createPDFA(
             throw IllegalArgumentException(e)
         }
 
-        val intent = PDOutputIntent(
-            document,
-            PDFGenCore.environment.colorProfile.inputStream(),
-        )
+        // Closing this in-memory stream is not required; use is kept for clarity.
+        // PDOutputIntent copies the ICC profile during construction.
+        val intent = PDFGenCore.environment.colorProfile.inputStream().use { profile ->
+            PDOutputIntent(document, profile)
+        }
 
         intent.info = "sRGB IEC61966-2.1"
         intent.outputCondition = "sRGB IEC61966-2.1"
@@ -269,18 +289,25 @@ private fun verifyCompliance(
                 flavour,
                 false,
             ).use { validator ->
-                val result = foundry
+                val validationResult = foundry
                     .createParser(pdf)
                     .use { parser -> validator.validate(parser) }
 
-                val failures = result.testAssertions
+                // VeraPDF includes passed assertions too; only failures need to be logged.
+                val failures = validationResult.testAssertions
                     .filter { it.status != TestAssertion.Status.PASSED }
 
-                failures.forEach { test ->
-                    log.warn { test.message }
-                    log.warn { "Location ${test.location.context} ${test.location.level}" }
-                    log.warn { "Status ${test.status}" }
-                    log.warn { "Test number ${test.ruleId.testNumber}" }
+                failures.forEach { assertion ->
+                    log.atWarn {
+                        message = "{} | Location: {}, level={}, status={}, testNumber={}"
+                        arguments = arrayOf(
+                            assertion.message,
+                            assertion.location.context,
+                            assertion.location.level,
+                            assertion.status,
+                            assertion.ruleId.testNumber,
+                        )
+                    }
                 }
                 failures.isEmpty()
             }
