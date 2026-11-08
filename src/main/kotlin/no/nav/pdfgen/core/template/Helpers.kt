@@ -229,15 +229,13 @@ fun registerNavHelpers(
                 if (context == null) {
                     ""
                 } else {
-                    Handlebars.SafeString(
-                        context
-                            .trim()
-                            .replace("\\s+".toRegex(), " ")
-                            .lowercase()
-                            .capitalizeWords(" ")
-                            .capitalizeWords("-")
-                            .capitalizeWords("'"),
-                    )
+                    context
+                        .trim()
+                        .replace("\\s+".toRegex(), " ")
+                        .lowercase()
+                        .capitalizeWords(" ")
+                        .capitalizeWords("-")
+                        .capitalizeWords("'")
                 }
             },
         )
