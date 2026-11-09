@@ -15,7 +15,7 @@ val jackson3Version = "3.2.4"
 val jaxbVersion = "4.0.9"
 val jsoupVersion = "1.23.2"
 val logbackVersion = "1.6.6"
-val openHtmlToPdfVersion = "1.1.105"
+val openHtmlToPdfVersion = "1.1.108"
 val micrometerVersion = "1.17.2"
 val junitJupiterVersion = "6.1.3"
 val verapdfVersion = "1.30.3"
@@ -29,7 +29,7 @@ plugins {
     id("java-library")
     kotlin("jvm") version "2.4.21"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
-    id("io.github.ben-manes.versions") version "0.66.0"
+    id("io.github.ben-manes.versions") version "0.67.0"
     id("maven-publish")
 }
 
