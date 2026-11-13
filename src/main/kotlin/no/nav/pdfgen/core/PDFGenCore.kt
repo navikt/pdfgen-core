@@ -1,13 +1,10 @@
 package no.nav.pdfgen.core
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import io.micrometer.core.instrument.MeterRegistry
 import java.util.concurrent.atomic.AtomicReference
 
 private val coreEnvironment: AtomicReference<Environment> = AtomicReference(null)
 private val coreMeterRegistry: AtomicReference<MeterRegistry> = AtomicReference(null)
-
-private val log = KotlinLogging.logger {}
 
 class PDFGenCore {
     companion object {
@@ -29,9 +26,7 @@ class PDFGenCore {
 
         val environment: Environment
             get() = coreEnvironment.updateAndGet { current ->
-                current ?: Environment().also {
-                    log.debug { "Creating default Environment" }
-                }
+                current ?: Environment()
             }!!
 
         internal val meterRegistry: MeterRegistry?
@@ -39,7 +34,6 @@ class PDFGenCore {
 
         @Suppress("unused")
         fun reloadEnvironment() {
-            log.debug { "Reloading environment" }
             coreEnvironment.updateAndGet { currentEnv ->
                 currentEnv?.copy() ?: Environment()
             }

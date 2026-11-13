@@ -20,9 +20,8 @@ val prometheusVersion = "0.16.0"
 val micrometerVersion = "1.17.2"
 val junitJupiterVersion = "6.1.3"
 val verapdfVersion = "1.30.3"
-val kotlinloggerVersion = "8.0.4"
 
-// /Due to vulnerabilities
+// Due to vulnerabilities
 val commonsIoVersion = "2.22.0"
 val rhinoVersion = "1.9.2"
 
@@ -87,7 +86,6 @@ dependencies {
     api("io.prometheus:simpleclient:$prometheusVersion")
     api("io.micrometer:micrometer-core:$micrometerVersion")
     implementation("org.verapdf:validation-model-jakarta:$verapdfVersion")
-    implementation("io.github.oshai:kotlin-logging-jvm:$kotlinloggerVersion")
 
     // Testing
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
