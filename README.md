@@ -37,33 +37,43 @@ In your own repository create folders `templates`, `resources` and `data` on roo
 
 
 ### Initialize pdfgen-core
+Pass the application's Micrometer `MeterRegistry` as the second argument to
+`PDFGenCore.init`. The examples assume `meterRegistry` is already configured by
+the application.
+
 #### Initialize with custom handlebar helpers
 You can initialize pdfgen-core with additional handlebar helpers:
 ```kotlin
-PDFGenCore.init(Environment(additionalHandlebarHelpers = mapOf(
-    "enum_to_readable" to Helper<String> { context, _ ->
-        when(context){
-            "SOME_ENUM_VALUE" -> "Human readable text"
-            else -> ""
-        }
-    },
-)))
+PDFGenCore.init(
+    Environment(
+        additionalHandlebarHelpers = mapOf(
+            "enum_to_readable" to Helper<String> { context, _ ->
+                when (context) {
+                    "SOME_ENUM_VALUE" -> "Human readable text"
+                    else -> ""
+                }
+            },
+        ),
+    ),
+    meterRegistry,
+)
 ```
 #### Initialize with alternative path to `templates`, `resources` folder
 ```kotlin
 PDFGenCore.init(
-Environment(
-    additionalHandlebarHelpers = mapOf(
-        "enum_to_readable" to Helper<String> { context, _ ->
-            when (context) {
-                "BIDRAGSMOTTAKER" -> "Bidragsmottaker"
-                else -> ""
-            }
-        },
+    Environment(
+        additionalHandlebarHelpers = mapOf(
+            "enum_to_readable" to Helper<String> { context, _ ->
+                when (context) {
+                    "BIDRAGSMOTTAKER" -> "Bidragsmottaker"
+                    else -> ""
+                }
+            },
+        ),
+        templateRoot = PDFGenResource("/path/to/templates"),
+        resourcesRoot = PDFGenResource("/path/to/resources"),
     ),
-    templateRoot = PDFGenResource("/path/to/templates"),
-    resourcesRoot = PDFGenResource("/path/to/resources"),
-),
+    meterRegistry,
 )
 ```
 

@@ -1,6 +1,7 @@
 package no.nav.pdfgen.core.pdf
 
 import com.sun.management.UnixOperatingSystemMXBean
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.pdfgen.core.Environment
 import no.nav.pdfgen.core.PDFGenCore
 import no.nav.pdfgen.core.PDFGenResource
@@ -22,10 +23,12 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 class CreatePdfKtTest {
-    @Suppress("DEPRECATION")
     private fun initializePdfGeneration(fontsRoot: Path = Path.of(requireNotNull(javaClass.getResource("/fonts")).toURI())) {
         // The renderer reads fonts by file path, so point it at the packaged font files.
-        PDFGenCore.init(Environment(fontsRoot = PDFGenResource(fontsRoot)))
+        PDFGenCore.init(
+            initialEnvironment = Environment(fontsRoot = PDFGenResource(fontsRoot)),
+            meterRegistry = SimpleMeterRegistry(),
+        )
         // PDF/A validation needs VeraPDF's provider registered.
         VeraGreenfieldFoundryProvider.initialise()
     }
