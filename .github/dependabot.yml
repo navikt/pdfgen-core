@@ -3,17 +3,37 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "daily"
+      time: "03:00"
+      timezone: "Europe/Oslo"
     cooldown:
       default-days: 7
+    open-pull-requests-limit: 10
     commit-message:
       prefix: "build(deps): "
+    groups:
+      major-updates:
+        update-types:
+          - "major"
+      nav-dependencies:
+        patterns:
+          - "no.nav*"
+      other-dependencies:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "daily"
+      time: "03:00"
+      timezone: "Europe/Oslo"
     cooldown:
       default-days: 7
+    open-pull-requests-limit: 10
     commit-message:
       prefix: "ci(deps): "
+    groups:
+      workflow-updates:
+        patterns:
+          - "*"

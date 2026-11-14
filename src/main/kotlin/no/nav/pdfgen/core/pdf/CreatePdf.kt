@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.openhtmltopdf.pdfboxout.PDFontSupplier
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
 import com.openhtmltopdf.svgsupport.BatikSVGDrawer
-import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.pdfgen.core.PDFGenCore
 import no.nav.pdfgen.core.util.FontMetadata
 import no.nav.pdfgen.core.util.scale
@@ -37,8 +36,6 @@ import java.io.OutputStream
 import java.nio.file.Path
 import java.util.Calendar
 import javax.imageio.ImageIO
-
-private val log = KotlinLogging.logger {}
 
 /**
  * Renders a template as a PDF/A document.
@@ -99,7 +96,10 @@ fun createPDFA(html: String): ByteArray {
         outputStream.toByteArray()
     }
     // Validate the serialized bytes so non-compliant output is never returned.
-    require(verifyCompliance(pdf)) { "Non-compliant PDF/A :(" }
+    val complianceFailures = verifyCompliance(pdf)
+    require(complianceFailures.isEmpty()) {
+        "Non-compliant PDF/A:\n${complianceFailures.joinToString("\n")}"
+    }
     return pdf
 }
 
@@ -271,16 +271,16 @@ fun createPDFA(
 }
 
 /**
- * Validates PDF bytes against [flavour] and logs failed assertions.
+ * Validates PDF bytes against [flavour] and returns failed assertions.
  *
  * @param input generated PDF bytes
  * @param flavour PDF/A profile to validate against
- * @return true if every validation assertion passes
+ * @return details for each failed assertion, or an empty list if validation passes
  */
 private fun verifyCompliance(
     input: ByteArray,
     flavour: PDFAFlavour = PDFAFlavour.PDFA_2_A,
-): Boolean {
+): List<String> {
     val foundry = Foundries.defaultInstance()
     return ByteArrayInputStream(input).use { pdf ->
         // The parser and validator only serve this PDF; use closes them on success or failure.
@@ -297,19 +297,11 @@ private fun verifyCompliance(
                 val failures = validationResult.testAssertions
                     .filter { it.status != TestAssertion.Status.PASSED }
 
-                failures.forEach { assertion ->
-                    log.atWarn {
-                        message = "{} | Location: {}, level={}, status={}, testNumber={}"
-                        arguments = arrayOf(
-                            assertion.message,
-                            assertion.location.context,
-                            assertion.location.level,
-                            assertion.status,
-                            assertion.ruleId.testNumber,
-                        )
-                    }
+                failures.map { assertion ->
+                    "${assertion.message} | Location: ${assertion.location.context}, " +
+                        "level=${assertion.location.level}, status=${assertion.status}, " +
+                        "testNumber=${assertion.ruleId.testNumber}"
                 }
-                failures.isEmpty()
             }
     }
 }

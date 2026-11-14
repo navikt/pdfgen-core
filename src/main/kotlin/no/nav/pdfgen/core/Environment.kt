@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import com.github.jknack.handlebars.Helper
-import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.pdfgen.core.template.loadTemplates
 import no.nav.pdfgen.core.util.FontMetadata
 import org.apache.pdfbox.io.IOUtils
@@ -18,7 +17,6 @@ import kotlin.io.path.extension
 import kotlin.io.path.pathString
 import kotlin.io.path.readBytes
 
-private val log = KotlinLogging.logger {}
 val objectMapper: ObjectMapper = ObjectMapper().findAndRegisterModules().registerKotlinModule()
 
 class Environment(
@@ -81,7 +79,6 @@ data class PDFGenResource(
 
     fun getPath(filename: String? = null): Path {
         val filePath = filename?.let { path.resolve(it) } ?: path
-        log.trace { "Reading file from path $filePath. File exists on path = ${filePath.exists()}" }
         return if (filePath.exists()) {
             filePath
         } else {

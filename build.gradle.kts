@@ -13,15 +13,14 @@ val handlebarsJackson2Version = "4.3.1"
 val jacksonVersion = "2.22.4"
 val jackson3Version = "3.2.4"
 val jaxbVersion = "4.0.9"
-val jsoupVersion = "1.23.2"
+val jsoupVersion = "1.24.1"
 val logbackVersion = "1.6.6"
-val openHtmlToPdfVersion = "1.1.108"
+val openHtmlToPdfVersion = "1.1.110"
 val micrometerVersion = "1.17.2"
 val junitJupiterVersion = "6.1.3"
 val verapdfVersion = "1.30.3"
-val kotlinloggerVersion = "8.0.4"
 
-// /Due to vulnerabilities
+// Due to vulnerabilities
 val commonsIoVersion = "2.22.0"
 val rhinoVersion = "1.9.2"
 
@@ -84,7 +83,6 @@ dependencies {
     // Logging and metrics
     api("io.micrometer:micrometer-core:$micrometerVersion")
     implementation("org.verapdf:validation-model-jakarta:$verapdfVersion")
-    implementation("io.github.oshai:kotlin-logging-jvm:$kotlinloggerVersion")
 
     // Testing
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
