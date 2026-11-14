@@ -15,10 +15,7 @@ updates:
       major-updates:
         update-types:
           - "major"
-      nav-dependencies:
-        patterns:
-          - "no.nav*"
-      other-dependencies:
+      non-major-updates:
         patterns:
           - "*"
 
