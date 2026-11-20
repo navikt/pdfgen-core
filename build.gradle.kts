@@ -10,8 +10,7 @@ val javaVersion = 25
 
 val handlebarsVersion = "4.5.8"
 val handlebarsJackson2Version = "4.3.1"
-val jacksonVersion = "2.22.4"
-val jackson3Version = "3.2.4"
+val jacksonVersion = "2.23.0"
 val jaxbVersion = "4.0.9"
 val jsoupVersion = "1.24.1"
 val logbackVersion = "1.6.6"
@@ -53,7 +52,6 @@ repositories {
 dependencies {
     // Dependency alignment
     implementation(platform("org.ow2.asm:asm-bom:9.11.1"))
-    implementation(platform("tools.jackson:jackson-bom:$jackson3Version"))
     constraints {
         implementation("org.mozilla:rhino:$rhinoVersion") {
             because("Due to vulnerabilities in org.verapdf:validation-model-jakarta")
