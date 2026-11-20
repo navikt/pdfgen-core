@@ -14,10 +14,10 @@ val jacksonVersion = "2.23.0"
 val jaxbVersion = "4.0.9"
 val jsoupVersion = "1.24.1"
 val logbackVersion = "1.6.6"
-val openHtmlToPdfVersion = "1.1.110"
+val openHtmlToPdfVersion = "1.1.113"
 val micrometerVersion = "1.17.2"
 val junitJupiterVersion = "6.1.3"
-val verapdfVersion = "1.30.3"
+val verapdfVersion = "1.30.4"
 
 // Due to vulnerabilities
 val commonsIoVersion = "2.22.0"
