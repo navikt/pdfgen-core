@@ -15,7 +15,7 @@ val jaxbVersion = "4.0.9"
 val jsoupVersion = "1.24.1"
 val logbackVersion = "1.6.7"
 val openHtmlToPdfVersion = "1.1.114"
-val micrometerVersion = "1.17.2"
+val micrometerVersion = "1.18.0"
 val junitJupiterVersion = "6.1.3"
 val verapdfVersion = "1.30.4"
 
